@@ -276,3 +276,8 @@ private URI getHost(URI uri) {
 ~~~
 
 此时就可以通过`http://127.0.0.1:8083/images/306678cb-c495-4cc2-a212-43c89d8d4a5b.png`访问图片了。
+
+## 批量上下架
+
+* Mybatis遍历Lit
+* wher语句拼接

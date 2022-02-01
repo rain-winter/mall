@@ -39,24 +39,33 @@ public class ProductServiceImpl implements ProductService {
             throw new ImoocMallException(ImoocMallExceptionEnum.NAME_EXISTED);
         }
         int count = productMapper.updateByPrimaryKeySelective(updateProduct);
-        if(count == 0){
+        if (count == 0) {
             throw new ImoocMallException(ImoocMallExceptionEnum.UPDATE_FAILED);
         }
     }
 
     @Override
-    public void delete(Integer id){
+    public void delete(Integer id) {
         // 查到就删除
         Product productOld = productMapper.selectByPrimaryKey(id);
-        if(productOld == null){
+        if (productOld == null) {
             throw new ImoocMallException(ImoocMallExceptionEnum.DELETE_FAILED);
         }
         int count = productMapper.deleteByPrimaryKey(id);
-        if(count == 0){
+        if (count == 0) {
             throw new ImoocMallException(ImoocMallExceptionEnum.DELETE_FAILED);
         }
-
     }
 
+    /**
+     * 批量上下架商品
+     *
+     * @param ids
+     * @param sellStatus
+     */
+    @Override
+    public void batchUpdateSellStatus(Integer[] ids, Integer sellStatus) {
+        productMapper.batchUpdateSellStatus(ids, sellStatus);
+    }
 
 }

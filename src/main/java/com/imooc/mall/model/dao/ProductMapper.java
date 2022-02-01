@@ -16,4 +16,6 @@ public interface ProductMapper {
     int updateByPrimaryKey(Product record);
 
     Product selectByName(String name);
+
+    int batchUpdateSellStatus(Integer[] ids, Integer sellStatus);
 }

@@ -2,7 +2,7 @@
 <Configuration status="fatal">
     <Properties>
         <!--  ${sys:user.home}/logs 配置日志路径-->
-        <Property name="baseDir" value="D:\my\mall\src\logs"/>
+        <Property name="baseDir" value="D:\GitHub\mall\src\logs"/>
     </Properties>
 
     <Appenders>

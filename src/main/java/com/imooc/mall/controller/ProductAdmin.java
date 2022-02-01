@@ -8,6 +8,7 @@ import com.imooc.mall.model.pojo.Product;
 import com.imooc.mall.model.request.AddProductReq;
 import com.imooc.mall.model.request.UpdateProductReq;
 import com.imooc.mall.service.ProductService;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -67,6 +68,18 @@ public class ProductAdmin {
     @PostMapping("admin/product/delete")
     public ApiRestResponse deleteProduct(@RequestParam Integer id) {
         productService.delete(id);
+        return ApiRestResponse.success();
+    }
+
+    /**
+     * 批量上下架商品
+     * @param ids
+     * @param sellStatus
+     * @return
+     */
+    @PostMapping("admin/product/batchUpdateSellStatus")
+    public ApiRestResponse batchUpdateSellStatus(@RequestParam Integer[] ids, @RequestParam Integer sellStatus) {
+        productService.batchUpdateSellStatus(ids, sellStatus);
         return ApiRestResponse.success();
     }
 
