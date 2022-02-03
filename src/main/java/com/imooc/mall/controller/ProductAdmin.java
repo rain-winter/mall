@@ -1,5 +1,6 @@
 package com.imooc.mall.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.imooc.mall.common.ApiRestResponse;
 import com.imooc.mall.common.Constant;
 import com.imooc.mall.exception.ImoocMallException;
@@ -73,6 +74,7 @@ public class ProductAdmin {
 
     /**
      * 批量上下架商品
+     *
      * @param ids
      * @param sellStatus
      * @return
@@ -81,6 +83,19 @@ public class ProductAdmin {
     public ApiRestResponse batchUpdateSellStatus(@RequestParam Integer[] ids, @RequestParam Integer sellStatus) {
         productService.batchUpdateSellStatus(ids, sellStatus);
         return ApiRestResponse.success();
+    }
+
+    /**
+     * 后台商品列表接口
+     * @param pageNum 第几页
+     * @param pageSize 每页多少条
+     * @return
+     */
+    @PostMapping("/admin/product/list")
+    public ApiRestResponse list(@RequestParam Integer pageNum,
+                                @RequestParam Integer pageSize) {
+        PageInfo pageInfo = productService.listForAdmin(pageNum, pageSize);
+        return ApiRestResponse.success(pageInfo);
     }
 
 

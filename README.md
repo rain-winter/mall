@@ -277,7 +277,24 @@ private URI getHost(URI uri) {
 
 此时就可以通过`http://127.0.0.1:8083/images/306678cb-c495-4cc2-a212-43c89d8d4a5b.png`访问图片了。
 
-## 批量上下架
+## 批量上下架（动态sql）
 
 * Mybatis遍历Lit
 * wher语句拼接
+
+~~~xml
+<update id="batchUpdateSellStatus">
+     update imooc_mall_product
+     set status = #{sellStatus}
+     where id in
+     <foreach collection="ids" close=")" item="id" open="("
+            separator=",">
+         #{id}
+     </foreach>
+</update>
+~~~
+
+ids是我们传来的数组
+
+## 后台商品列表接口
+
