@@ -93,9 +93,9 @@ public class CategoryServiceImpl implements CategoryService {
      * @return
      */
     @Override
-    public List<CategoryVO> listCategoryForCustomer() {
+    public List<CategoryVO> listCategoryForCustomer(Integer parentId) {
         ArrayList<CategoryVO> categoryVOArrayList = new ArrayList<>();
-        recursivelyFindCategories(categoryVOArrayList, 0);
+        recursivelyFindCategories(categoryVOArrayList, parentId);
         return categoryVOArrayList;
     }
 

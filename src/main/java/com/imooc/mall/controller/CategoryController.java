@@ -109,10 +109,14 @@ public class CategoryController {
         return ApiRestResponse.success(pageInfo);
     }
 
+    /**
+     * 用户看的分类列表
+     * @return
+     */
     @PostMapping("/category/list")
     @ResponseBody
     public ApiRestResponse listCategoryForCustomer() {
-        List<CategoryVO> categoryVOS = categoryService.listCategoryForCustomer();
+        List<CategoryVO> categoryVOS = categoryService.listCategoryForCustomer(0);
         return ApiRestResponse.success(categoryVOS);
     }
 }

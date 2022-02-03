@@ -19,4 +19,6 @@ public interface ProductService {
     void batchUpdateSellStatus(Integer[] ids, Integer sellStatus);
 
     PageInfo listForAdmin(Integer pageNum, Integer pageSize);
+
+    Product detail(Integer id);
 }

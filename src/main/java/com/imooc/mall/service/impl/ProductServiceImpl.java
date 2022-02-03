@@ -6,12 +6,18 @@ import com.imooc.mall.exception.ImoocMallException;
 import com.imooc.mall.exception.ImoocMallExceptionEnum;
 import com.imooc.mall.model.dao.ProductMapper;
 import com.imooc.mall.model.pojo.Product;
+import com.imooc.mall.model.query.ProductListQuery;
 import com.imooc.mall.model.request.AddProductReq;
+import com.imooc.mall.model.request.ProductListReq;
+import com.imooc.mall.service.CategoryService;
 import com.imooc.mall.service.ProductService;
+import com.imooc.mall.vo.CategoryVO;
+import com.mysql.cj.util.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,6 +25,14 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     ProductMapper productMapper;
 
+    @Autowired
+    CategoryService categoryService;
+
+    /**
+     * 添加商品
+     *
+     * @param addProductReq
+     */
     @Override
     public void add(AddProductReq addProductReq) {
         Product product = new Product();
@@ -35,6 +49,11 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    /**
+     * 更新商品
+     *
+     * @param updateProduct
+     */
     @Override
     public void update(Product updateProduct) {
         Product productOld = productMapper.selectByName(updateProduct.getName());
@@ -64,14 +83,15 @@ public class ProductServiceImpl implements ProductService {
     /**
      * 批量上下架商品
      *
-     * @param ids
-     * @param sellStatus
+     * @param ids        传来的数组 （1，2，3）
+     * @param sellStatus 上下架的状态
      */
     @Override
     public void batchUpdateSellStatus(Integer[] ids, Integer sellStatus) {
         productMapper.batchUpdateSellStatus(ids, sellStatus);
     }
 
+    // 商品列表
     @Override
     public PageInfo listForAdmin(Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
@@ -79,6 +99,47 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = productMapper.selectListForAdmin();
         PageInfo pageInfo = new PageInfo(products);
         return pageInfo;
+    }
+
+    //    用户商品列表
+    @Override
+    public Product detail(Integer id) {
+        Product product = productMapper.selectByPrimaryKey(id);
+        return product;
+    }
+
+    public PageInfo list(ProductListReq productListReq) {
+        // 构建query对象
+        ProductListQuery productListQuery = new ProductListQuery();
+        // 搜索 不为空
+        if (!StringUtils.isNullOrEmpty(productListReq.getKeyword())) {
+            String keyword = new StringBuilder().append("%")
+                    .append(productListReq.getKeyword())
+                    .append("%").toString();
+            // %keyword%
+            productListQuery.setKeyword(keyword);
+        }
+
+        // 目录处理，如果查某个目录下的商品。要把所有子目录商品都查出来
+        // 要拿到目录id的list
+        if (productListReq.getCategoryId() != null) {
+            List<CategoryVO> categoryVOList = categoryService.listCategoryForCustomer(productListReq.getCategoryId());
+            ArrayList<Integer> categoryIds = new ArrayList<>();
+            categoryIds.add(productListReq.getCategoryId());
+            getCategoryIds(categoryVOList, categoryIds);
+            productListQuery.setCategoryIds(categoryIds);
+        }
+    }
+
+    private void getCategoryIds(List<CategoryVO> categoryVOList,
+                                ArrayList<Integer> categoryIds) {
+        for (int i = 0; i < categoryVOList.size(); i++) {
+            CategoryVO categoryVO = categoryVOList.get(i);
+            if (categoryVO != null) {
+                categoryIds.add(categoryVO.getId());
+                getCategoryIds(categoryVO.getChildCategory(), categoryIds);
+            }
+        }
     }
 
 }

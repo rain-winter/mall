@@ -298,3 +298,26 @@ ids是我们传来的数组
 
 ## 后台商品列表接口
 
+```java
+// service层
+public PageInfo listForAdmin(Integer pageNum, Integer pageSize) {
+    PageHelper.startPage(pageNum, pageSize);
+    // 紧接着进行查询
+    List<Product> products = productMapper.selectListForAdmin(); // 查询所有的数据
+    PageInfo pageInfo = new PageInfo(products);
+    return pageInfo;
+}
+```
+
+```java
+// controller 层
+@PostMapping("/admin/product/list")
+public ApiRestResponse list(@RequestParam Integer pageNum,
+                            @RequestParam Integer pageSize) {
+    PageInfo pageInfo = productService.listForAdmin(pageNum, pageSize);
+    return ApiRestResponse.success(pageInfo);
+}
+```
+
+## 商品列表：搜索功能
+
