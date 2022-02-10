@@ -321,3 +321,109 @@ public ApiRestResponse list(@RequestParam Integer pageNum,
 
 ## 商品列表：搜索功能
 
+model -- request -- ProductListReq.java
+
+~~~java
+public class ProductListReq {
+    private String keyword;
+    private Integer categoryId;
+    private String orderBy;
+    private Integer pageNum = 1;
+    private Integer pageSize = 10;
+}
+~~~
+
+model -- query -- ProductListQuery.java
+
+~~~java
+//查询商品列表的query
+public class ProductListQuery {
+    private String keyword;
+    private List<Integer> categoryIds; // list 存放多个id
+}
+~~~
+
+ProductMapper.java
+
+~~~java
+// 前台列表
+List<Product> selectList(@Param("query") ProductListQuery query);
+~~~
+
+ProductMapper.xml
+
+~~~xml
+<select id="selectList" parameterType="com.imooc.mall.model.query.ProductListQuery"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from imooc_mall_product
+        <where>
+            <if test="query.keyword != null">
+                and name like #{query.keyword}
+            </if>
+            <if test="query.categoryIds != null">
+                and category_id in
+                <foreach collection="query.categoryIds" close=")" item="item" open="("
+                         separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            and status = 1
+        </where>
+        order by update_time desc
+    </select>
+~~~
+
+service -- ProductServiceImpl.java
+
+~~~java
+public PageInfo list(ProductListReq productListReq) {
+        // 构建query对象
+        ProductListQuery productListQuery = new ProductListQuery();
+        // 搜索 不为空
+        if (!StringUtils.isNullOrEmpty(productListReq.getKeyword())) {
+            String keyword = new StringBuilder().append("%").append(productListReq.getKeyword()).append("%").toString();
+            // %keyword%
+            productListQuery.setKeyword(keyword);
+        }
+
+        // 目录处理，如果查某个目录下的商品。要把所有子目录商品都查出来
+        // 要拿到目录id的list
+        if (productListReq.getCategoryId() != null) {
+            List<CategoryVO> categoryVOList = categoryService.listCategoryForCustomer(productListReq.getCategoryId());
+            ArrayList<Integer> categoryIds = new ArrayList<>();
+            categoryIds.add(productListReq.getCategoryId());
+            getCategoryIds(categoryVOList, categoryIds);
+            productListQuery.setCategoryIds(categoryIds); // 所有id放到productListQuery
+
+        }
+
+        // 排序处理
+        String orderBy = productListReq.getOrderBy();
+        if (Constant.ProductListOrderBy.PRICE_ASC_DESC.contains(orderBy
+        )) {
+            PageHelper.startPage(productListReq.getPageNum(), productListReq.getPageSize(), orderBy);
+        } else {
+            PageHelper.startPage(productListReq.getPageNum(), productListReq.getPageSize());
+        }
+        List<Product> productList = productMapper.selectList(productListQuery);
+        PageInfo pageInfo = new PageInfo(productList);
+        return  pageInfo;
+    }
+
+    /**
+     * @param categoryVOList 目录树，所有id放到categoryIds
+     * @param categoryIds    [1,2,3]
+     */
+    private void getCategoryIds(List<CategoryVO> categoryVOList, ArrayList<Integer> categoryIds) {
+        for (int i = 0; i < categoryVOList.size(); i++) {
+            CategoryVO categoryVO = categoryVOList.get(i);
+            if (categoryVO != null) {
+                categoryIds.add(categoryVO.getId());
+                getCategoryIds(categoryVO.getChildCategory(), categoryIds);
+            }
+        }
+    }
+~~~
+

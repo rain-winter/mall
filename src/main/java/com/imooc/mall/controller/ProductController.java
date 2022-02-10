@@ -1,5 +1,6 @@
 package com.imooc.mall.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.imooc.mall.common.ApiRestResponse;
 import com.imooc.mall.model.pojo.Product;
 import com.imooc.mall.model.request.ProductListReq;
@@ -20,6 +21,7 @@ public class ProductController {
 
     /**
      * 商品详情
+     *
      * @param id 商品id
      * @return 一个商品
      */
@@ -29,7 +31,14 @@ public class ProductController {
         return ApiRestResponse.success(product);
     }
 
-    public ApiRestResponse list(ProductListReq productListReq){
-
+    /**
+     * @param productListReq
+     * @return
+     */
+    @GetMapping("product/list")
+    public ApiRestResponse list(ProductListReq productListReq) {
+        System.out.println(productListReq);
+        PageInfo list = productService.list(productListReq);
+        return ApiRestResponse.success(list);
     }
 }

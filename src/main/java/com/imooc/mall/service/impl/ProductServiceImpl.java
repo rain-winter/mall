@@ -2,6 +2,7 @@ package com.imooc.mall.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.imooc.mall.common.Constant;
 import com.imooc.mall.exception.ImoocMallException;
 import com.imooc.mall.exception.ImoocMallExceptionEnum;
 import com.imooc.mall.model.dao.ProductMapper;
@@ -101,21 +102,25 @@ public class ProductServiceImpl implements ProductService {
         return pageInfo;
     }
 
-    //    用户商品列表
+    /**
+     * 用户商品列表详情
+     *
+     * @param id 商品的id
+     * @return 返回商品的详情
+     */
     @Override
     public Product detail(Integer id) {
         Product product = productMapper.selectByPrimaryKey(id);
         return product;
     }
 
+    @Override
     public PageInfo list(ProductListReq productListReq) {
         // 构建query对象
         ProductListQuery productListQuery = new ProductListQuery();
         // 搜索 不为空
         if (!StringUtils.isNullOrEmpty(productListReq.getKeyword())) {
-            String keyword = new StringBuilder().append("%")
-                    .append(productListReq.getKeyword())
-                    .append("%").toString();
+            String keyword = new StringBuilder().append("%").append(productListReq.getKeyword()).append("%").toString();
             // %keyword%
             productListQuery.setKeyword(keyword);
         }
@@ -127,12 +132,28 @@ public class ProductServiceImpl implements ProductService {
             ArrayList<Integer> categoryIds = new ArrayList<>();
             categoryIds.add(productListReq.getCategoryId());
             getCategoryIds(categoryVOList, categoryIds);
-            productListQuery.setCategoryIds(categoryIds);
+            productListQuery.setCategoryIds(categoryIds); // 所有id放到productListQuery
+
         }
+
+        // 排序处理
+        String orderBy = productListReq.getOrderBy();
+        if (Constant.ProductListOrderBy.PRICE_ASC_DESC.contains(orderBy
+        )) {
+            PageHelper.startPage(productListReq.getPageNum(), productListReq.getPageSize(), orderBy);
+        } else {
+            PageHelper.startPage(productListReq.getPageNum(), productListReq.getPageSize());
+        }
+        List<Product> productList = productMapper.selectList(productListQuery);
+        PageInfo pageInfo = new PageInfo(productList);
+        return  pageInfo;
     }
 
-    private void getCategoryIds(List<CategoryVO> categoryVOList,
-                                ArrayList<Integer> categoryIds) {
+    /**
+     * @param categoryVOList 目录树，所有id放到categoryIds
+     * @param categoryIds    [1,2,3]
+     */
+    private void getCategoryIds(List<CategoryVO> categoryVOList, ArrayList<Integer> categoryIds) {
         for (int i = 0; i < categoryVOList.size(); i++) {
             CategoryVO categoryVO = categoryVOList.get(i);
             if (categoryVO != null) {

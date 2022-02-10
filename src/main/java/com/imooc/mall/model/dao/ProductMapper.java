@@ -1,6 +1,8 @@
 package com.imooc.mall.model.dao;
 
 import com.imooc.mall.model.pojo.Product;
+import com.imooc.mall.model.query.ProductListQuery;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -20,8 +22,11 @@ public interface ProductMapper {
     Product selectByName(String name);
 
     //    动态sql
-    int batchUpdateSellStatus(Integer[] ids, Integer sellStatus);
+    int batchUpdateSellStatus(@Param("ids") Integer[] ids, @Param("sellStatus") Integer sellStatus);
 
     //    查询所有数据，分页用
     List<Product> selectListForAdmin();
+
+    // 前台列表
+    List<Product> selectList(@Param("query") ProductListQuery query);
 }
