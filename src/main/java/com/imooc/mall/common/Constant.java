@@ -26,7 +26,9 @@ public class Constant {
         FILE_UPLOAD_DIR = fileUploadDir;
     }
 
+    // 排序
     public interface ProductListOrderBy {
-        HashSet<String> PRICE_ASC_DESC = Sets.newHashSet("price desc","price asc");
+        // 构建 set
+        HashSet<String> PRICE_ASC_DESC = Sets.newHashSet("price desc", "price asc");
     }
 }

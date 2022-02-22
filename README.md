@@ -427,3 +427,26 @@ public PageInfo list(ProductListReq productListReq) {
     }
 ~~~
 
+# 购物车模块
+
+## 概览
+
+1. 
+
+## 用户过滤器开发
+
+~~~java
+package com.imooc.mall.filter;
+public class UesrFilter implements Filter {}
+~~~
+
+~~~java
+package com.imooc.mall.config;
+public class UserFilterConfig {}
+~~~
+
+
+
+## 购物车列表
+
+## 

@@ -146,7 +146,7 @@ public class ProductServiceImpl implements ProductService {
         }
         List<Product> productList = productMapper.selectList(productListQuery);
         PageInfo pageInfo = new PageInfo(productList);
-        return  pageInfo;
+        return pageInfo;
     }
 
     /**
