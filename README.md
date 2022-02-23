@@ -431,7 +431,7 @@ public PageInfo list(ProductListReq productListReq) {
 
 ## 概览
 
-1. 
+1. 添加到购物车
 
 ## 用户过滤器开发
 
@@ -445,8 +445,27 @@ package com.imooc.mall.config;
 public class UserFilterConfig {}
 ~~~
 
+## 添加购物车
+
+~~~sql
+// package com.imooc.mall.model.dao;
+Cart selectCartByUserIdAndProductId(@Param("userId") Integer userId, @Param("productId") Integer productId);
+~~~
+
+~~~java
+package com.imooc.mall.service.impl;
+public List<CartVO> add(Integer userId, Integer productId, Integer count) {
+    // 从用户过滤器中获取userId，
+    // 1.这个商品之前不在购物车里，需要新增记录
+    // 2.这个商品已经在购物车里，则数量相加
+}
+~~~
+
+~~~java
+package com.imooc.mall.controller;
+public ApiRestResponse add(@RequestParam Integer productId, @RequestParam Integer count) {}
+~~~
 
 
-## 购物车列表
 
-## 7.3
+7.6

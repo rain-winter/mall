@@ -16,8 +16,9 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class UesrFilter implements Filter {
+public class UserFilter implements Filter {
 
+    // 获取当前user，并存档
     public static User currentUser;
 
     @Autowired

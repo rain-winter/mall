@@ -31,4 +31,17 @@ public class Constant {
         // 构建 set
         HashSet<String> PRICE_ASC_DESC = Sets.newHashSet("price desc", "price asc");
     }
+
+    // 上下架枚举
+    public interface SaleStatus {
+        int NOT_SALE = 0; // 下架
+        int SALE = 0; // 上架
+    }
+
+    // 购物车枚举
+    public interface Cart {
+        int UN_CHECKED = 0; // 购物车未选中
+        int CHECKED = 1; // 购物车选中
+    }
+
 }

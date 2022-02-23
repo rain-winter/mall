@@ -1,6 +1,6 @@
 package com.imooc.mall.config;
 
-import com.imooc.mall.filter.UesrFilter;
+import com.imooc.mall.filter.UserFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,12 +13,12 @@ import javax.servlet.Filter;
 @Configuration
 public class UserFilterConfig {
     @Bean
-    public UesrFilter uesrFilter() {
-        return new UesrFilter();
+    public UserFilter uesrFilter() {
+        return new UserFilter();
     }
 
     @Bean(name = "userFilterConf")
-    public FilterRegistrationBean adminFilterConfig() {
+    public FilterRegistrationBean userFilterConfig() {
         FilterRegistrationBean<Filter> filterRegistrationBean = new FilterRegistrationBean<>();
         filterRegistrationBean.setFilter(uesrFilter());
         // 设置拦截的 URL。只需拦截订单模块，购物车模块
