@@ -78,7 +78,7 @@ public class CartServiceImpl implements CartService {
             cartMapper.insertSelective(cart);
         } else {
             // 这个商品已经在购物车里，则数量相加
-            count = cart.getQuantity() + count;
+//            count = cart.getQuantity() + count;
             Cart cartNew = new Cart();
             cartNew.setQuantity(count);
             cartNew.setId(cart.getId());
@@ -110,7 +110,8 @@ public class CartServiceImpl implements CartService {
 
     /**
      * 删除购物车
-     * @param userId 用户id
+     *
+     * @param userId    用户id
      * @param productId 商品id
      * @return
      */
@@ -127,6 +128,38 @@ public class CartServiceImpl implements CartService {
         return this.list(userId);
     }
 
+    /**
+     * 选中、全选状态
+     *
+     * @param userId    用户id
+     * @param productId 商品id
+     * @param selected  是否已勾选：0代表未勾选，1代表已勾选
+     * @return
+     */
+    @Override
+    public List<CartVO> selectOrNot(Integer userId, Integer productId, Integer selected) {
+        List<CartVO> cart = cartMapper.selectList(userId);
+        if (cart == null) {
+            // 这个商品不在购物车，所以无法选中
+            throw new ImoocMallException(ImoocMallExceptionEnum.UPDATE_FAILED);
+        } else {
+            // 这个商品已经在购物车，可以删除
+            cartMapper.selectOrNot(userId, productId, selected);
+        }
+        return this.list(userId);
+    }
+
+    /**
+     * 权重
+     * @param userId
+     * @param selected
+     * @return
+     */
+    @Override
+    public List<CartVO> selectAllOrNot(Integer userId, Integer selected) {
+        cartMapper.selectOrNot(userId, null, selected);
+        return this.list(userId);
+    }
 
     @Override
     public List<CartVO> list(Integer userId) {

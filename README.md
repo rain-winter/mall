@@ -456,6 +456,7 @@ Cart selectCartByUserIdAndProductId(@Param("userId") Integer userId, @Param("pro
 package com.imooc.mall.service.impl;
 public List<CartVO> add(Integer userId, Integer productId, Integer count) {
     // 从用户过滤器中获取userId，
+    cartService.add(UserFilter.currentUser.getId(), productId, count);
     // 1.这个商品之前不在购物车里，需要新增记录
     // 2.这个商品已经在购物车里，则数量相加
 }
@@ -466,6 +467,18 @@ package com.imooc.mall.controller;
 public ApiRestResponse add(@RequestParam Integer productId, @RequestParam Integer count) {}
 ~~~
 
+## select选中接口
+
+~~~sql
+<update id="selectOrNot" parameterType="map">
+        update imooc_mall_cart
+        set selected = #{selected}
+        where user_id = #{userId}
+        and productId = #{productId}
+</update>
+~~~
 
 
-7.6
+
+
+

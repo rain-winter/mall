@@ -23,4 +23,7 @@ public interface CartMapper {
     Cart selectCartByUserIdAndProductId(@Param("userId") Integer userId, @Param("productId") Integer productId);
 
     List<CartVO> selectList(@Param("userId") Integer userId);
+
+    // 更新选中状态
+    Integer selectOrNot(@Param("userId") Integer userId, @Param("productId") Integer productId, @Param("selected") Integer selected);
 }
