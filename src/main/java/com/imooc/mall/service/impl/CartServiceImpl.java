@@ -23,6 +23,40 @@ public class CartServiceImpl implements CartService {
     CartMapper cartMapper;
 
     /**
+     * 更新商品
+     *
+     * @param userId    用户id
+     * @param productId 商品id
+     * @param count     商品数量
+     * @return
+     */
+    @Override
+    public List<CartVO> update(Integer userId, Integer productId, Integer count) {
+        validProduct(productId, count);
+        Cart cart = cartMapper.selectCartByUserIdAndProductId(userId, productId);
+        if (cart == null) {
+            // 这个商品之前不在购物车里，需要新增记录
+            cart = new Cart();
+            cart.setProductId(productId);
+            cart.setUserId(userId);
+            cart.setQuantity(count);
+            cart.setSelected(Constant.Cart.CHECKED);
+            cartMapper.insertSelective(cart);
+        } else {
+            // 这个商品已经在购物车里，则数量相加
+            count = cart.getQuantity() + count;
+            Cart cartNew = new Cart();
+            cartNew.setQuantity(count);
+            cartNew.setId(cart.getId());
+            cartNew.setProductId(cart.getProductId());
+            cartNew.setUserId(cart.getUserId());
+            cartNew.setSelected(Constant.Cart.CHECKED);
+            cartMapper.updateByPrimaryKeySelective(cartNew);
+        }
+        return this.list(userId);
+    }
+
+    /**
      * 添加到购物车
      *
      * @param userId    当前用户的 id
@@ -69,10 +103,30 @@ public class CartServiceImpl implements CartService {
             throw new ImoocMallException(ImoocMallExceptionEnum.NOT_SALE);
         }
         // 判断商品库存。用户购买数量是否大于库存
-        if (count > product.getStatus()) {
+        if (count > product.getStock()) {
             throw new ImoocMallException(ImoocMallExceptionEnum.NOT_ENOUGH);
         }
     }
+
+    /**
+     * 删除购物车
+     * @param userId 用户id
+     * @param productId 商品id
+     * @return
+     */
+    @Override
+    public List<CartVO> delete(Integer userId, Integer productId) {
+        Cart cart = cartMapper.selectCartByUserIdAndProductId(userId, productId);
+        if (cart == null) {
+            // 这个商品不在购物车，所以无法删除
+            throw new ImoocMallException(ImoocMallExceptionEnum.DELETE_FAILED);
+        } else {
+            // 这个商品已经在购物车，可以删除
+            cartMapper.deleteByPrimaryKey(cart.getId());
+        }
+        return this.list(userId);
+    }
+
 
     @Override
     public List<CartVO> list(Integer userId) {
