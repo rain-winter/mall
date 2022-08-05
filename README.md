@@ -469,16 +469,20 @@ public ApiRestResponse add(@RequestParam Integer productId, @RequestParam Intege
 
 ## select选中接口
 
+选中和全选都是调用这个sql，只是全选不传递productId
+
 ~~~sql
-<update id="selectOrNot" parameterType="map">
+ <update id="selectOrNot" parameterType="map">
         update imooc_mall_cart
         set selected = #{selected}
         where user_id = #{userId}
-        and productId = #{productId}
+        <if test="productId != null">
+            and product_id = #{productId}
+        </if>
 </update>
 ~~~
 
-
+8.1
 
 
 
