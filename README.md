@@ -482,7 +482,16 @@ public ApiRestResponse add(@RequestParam Integer productId, @RequestParam Intege
 </update>
 ~~~
 
-8.1
+# 订单模块
+
+## 下单
+
+登录、浏览商品、加入购物车、下单（取消订单）、扫码支付、发货、收获、订单完结
+
+~~~txt
+~~~
+
+
 
 
 

@@ -128,7 +128,7 @@ public class ProductAdmin {
         try {
             return ApiRestResponse.success(getHost(new URI(httpServletRequest.getRequestURI() + "")) + "/images/" + newFileName);
         } catch (URISyntaxException e) {
-            return ApiRestResponse.error(ImoocMallExceptionEnum.UPDATE_FAILED);
+            return ApiRestResponse.error(ImoocMallExceptionEnum.UPLOAD_FAILED);
         }
     }
 
