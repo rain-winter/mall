@@ -19,6 +19,7 @@ import com.imooc.mall.utils.OrderCodeFactory;
 import com.imooc.mall.vo.CartVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -47,9 +48,12 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 创建订单
+     *
      * @param createOrderReq 收货人姓名、手机号、地址、运费、支付类型
      * @return 订单编号
      */
+    // 数据库事务 有任何异常都会回滚，不插入数据库
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public String create(CreateOrderReq createOrderReq) {
         // 1. 拿到用户ID

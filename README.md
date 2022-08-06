@@ -492,9 +492,23 @@ public ApiRestResponse add(@RequestParam Integer productId, @RequestParam Intege
 
 登录、浏览商品、加入购物车、下单（取消订单）、扫码支付、发货、收获、订单完结
 
+## 创建订单
 
-
-8.5
+~~~java
+@Transactional(rollbackFor = Exception.class) // 有异常回滚，不插入数据库
+public String create(CreateOrderReq createOrderReq) {
+    Integer userId = UserFilter.currentUser.getId(); // 获取用户id
+    List<CartVO> cartVOList = cartService.list(userId); // 获取用户选中的 商品列表
+    // 判断商品是不是在售。通过循环cartVOList，判断Selected==1？
+    // 上下架状态、库存、数量是否合规，也是通过循环
+    List<OrderItem> orderItemList = cartVOListToOrderItemList(cartVOList); // orderItem对象
+    // 循环，扣除该商品的库存
+    cleanCart(cartVOList); // 删除购物车里已购买的商品
+    String orderNo = OrderCodeFactory.getOrderCode(Long.valueOf(userId)); // 生成订单号
+    orderMapper.insertSelective(order); // 插入到order表
+    orderItemMapper.insertSelective(orderItem); // 循环插入orderItem表    
+}
+~~~
 
 
 
