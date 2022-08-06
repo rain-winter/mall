@@ -15,7 +15,7 @@ public class CreateOrderReq {
     private String receiverAddress;
 
     @NotNull
-    private Integer postage = 0;
+    private Integer postage = 0; // 运费，默认是0
 
     private Integer paymentType = 1; // 扫描
 

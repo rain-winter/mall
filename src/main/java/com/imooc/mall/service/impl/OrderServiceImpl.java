@@ -6,6 +6,8 @@ import com.imooc.mall.exception.ImoocMallException;
 import com.imooc.mall.exception.ImoocMallExceptionEnum;
 import com.imooc.mall.filter.UserFilter;
 import com.imooc.mall.model.dao.CartMapper;
+import com.imooc.mall.model.dao.OrderItemMapper;
+import com.imooc.mall.model.dao.OrderMapper;
 import com.imooc.mall.model.dao.ProductMapper;
 import com.imooc.mall.model.pojo.Order;
 import com.imooc.mall.model.pojo.OrderItem;
@@ -32,20 +34,32 @@ public class OrderServiceImpl implements OrderService {
     CartService cartService;
 
     @Autowired
+    OrderMapper orderMapper;
+
+    @Autowired
+    OrderItemMapper orderItemMapper;
+
+    @Autowired
     ProductMapper productMapper;
 
     @Autowired
     CartMapper cartMapper;
 
+    /**
+     * 创建订单
+     * @param createOrderReq 收货人姓名、手机号、地址、运费、支付类型
+     * @return 订单编号
+     */
     @Override
     public String create(CreateOrderReq createOrderReq) {
         // 1. 拿到用户ID
         Integer userId = UserFilter.currentUser.getId();
         // 2. 从购物车查找已经勾选的商品
-        List<CartVO> cartVOList = cartService.list(userId); // 选中地 商品列表
+        List<CartVO> cartVOList = cartService.list(userId); // 选中的 商品列表
         ArrayList<CartVO> cartVOListTmp = new ArrayList<>();
         for (int i = 0; i < cartVOList.size(); i++) {
             CartVO cartVO = cartVOList.get(i);
+            System.out.println(cartVO);
             // 筛选出选中的商品
             if (cartVO.getSelected().equals(Constant.Cart.CHECKED)) {
                 cartVOListTmp.add(cartVO);
@@ -77,12 +91,44 @@ public class OrderServiceImpl implements OrderService {
 
         // 生成订单号，有独立规则
         Order order = new Order();
+//        生成订单号
         String orderNo = OrderCodeFactory.getOrderCode(Long.valueOf(userId));
         order.setOrderNo(orderNo);
+        order.setUserId(userId);
+        order.setTotalPrice(totalPrice(orderItemList));
+        order.setReceiverName(createOrderReq.getReceiverName());
+        order.setReceiverMobile(createOrderReq.getReceiverMobile());
+        order.setReceiverAddress(createOrderReq.getReceiverAddress());
+        order.setOrderStatus(Constant.OrderStatusEnum.NOT_PAID.getCode());
+        order.setPaymentType(0);
+        order.setPaymentType(1);
+        // 插入到order表
+        orderMapper.insertSelective(order);
         // 循环保存每个商品到order_item表
-        return null;
+        for (int i = 0; i < orderItemList.size(); i++) {
+            OrderItem orderItem = orderItemList.get(i);
+            orderItem.setOrderNo(orderNo);
+            orderItemMapper.insertSelective(orderItem);
+        }
+        return orderNo;
     }
 
+    /**
+     * 求购物车所有物品得总价
+     *
+     * @param orderItemList
+     * @return
+     */
+    private Integer totalPrice(List<OrderItem> orderItemList) {
+        Integer totalPrice = 0;
+        for (int i = 0; i < orderItemList.size(); i++) {
+            OrderItem orderItem = orderItemList.get(i);
+            totalPrice += orderItem.getTotalPrice();
+        }
+        return totalPrice;
+    }
+
+    // 清空购物车
     private void cleanCart(List<CartVO> cartVOList) {
         for (int i = 0; i < cartVOList.size(); i++) {
             CartVO cartVO = cartVOList.get(i);
@@ -93,12 +139,12 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 生成订单子项
      *
-     * @param cartVOList
+     * @param cartVOList 用户选中的商品列表
      * @return
      */
     private List<OrderItem> cartVOListToOrderItemList(List<CartVO> cartVOList) {
         List<OrderItem> orderItemList = new ArrayList<OrderItem>();
-        for (int i = 0; i < orderItemList.size(); i++) {
+        for (int i = 0; i < cartVOList.size(); i++) {
             CartVO cartVO = cartVOList.get(i);
             OrderItem orderItem = new OrderItem();
             orderItem.setProductId(cartVO.getProductId());

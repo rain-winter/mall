@@ -469,7 +469,9 @@ public ApiRestResponse add(@RequestParam Integer productId, @RequestParam Intege
 
 ## select选中接口
 
-选中和全选都是调用这个sql，只是全选不传递productId
+选中和全选都是调用这个sql，只是全选不传递productId。
+
+把用户选中得商品全部查出来
 
 ~~~sql
  <update id="selectOrNot" parameterType="map">
@@ -482,16 +484,17 @@ public ApiRestResponse add(@RequestParam Integer productId, @RequestParam Intege
 </update>
 ~~~
 
+
+
 # 订单模块
 
 ## 下单
 
 登录、浏览商品、加入购物车、下单（取消订单）、扫码支付、发货、收获、订单完结
 
-~~~txt
-~~~
 
 
+8.5
 
 
 

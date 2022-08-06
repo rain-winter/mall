@@ -16,8 +16,14 @@ public class OrderController {
     @Autowired
     OrderService orderService;
 
+    /**
+     * 创建订单
+     * @param createOrderReq
+     * @return
+     */
     @PostMapping("order/create")
-    public ApiRestResponse create(@RequestBody CreateOrderReq createOrderReq){
-return null;
+    public ApiRestResponse create(@RequestBody CreateOrderReq createOrderReq) {
+        String orderNo = orderService.create(createOrderReq);
+        return ApiRestResponse.success(orderNo);
     }
 }

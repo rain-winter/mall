@@ -150,10 +150,10 @@ public class CartServiceImpl implements CartService {
     }
 
     /**
-     * 权重
-     * @param userId
-     * @param selected
-     * @return
+     * 选中
+     * @param userId 用户id
+     * @param selected 1选中 0不选
+     * @return 所有选中或者未选得列表
      */
     @Override
     public List<CartVO> selectAllOrNot(Integer userId, Integer selected) {

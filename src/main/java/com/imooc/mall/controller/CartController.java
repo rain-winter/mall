@@ -9,6 +9,7 @@ import com.imooc.mall.vo.CartVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -69,7 +70,7 @@ public class CartController {
      * @return
      */
     @PostMapping("/select")
-    public ApiRestResponse select(@RequestParam() Integer productId, @RequestParam Integer selected) {
+    public ApiRestResponse select(@NotNull  @RequestParam() Integer productId,@NotNull @RequestParam Integer selected) {
         // 不能传入userID cartID。否则可以删除别人的购物车
         // 1选中 0不选
         if (selected != 0 && selected != 1) {

@@ -24,8 +24,9 @@ public enum ImoocMallExceptionEnum {
     NOT_ENOUGH(10017, "库存不足"),
 
     CART_EMPTY(10018, "购物车已勾选的商品为空"),
-
+    NO_ENUM(10019,"未找到对应得枚举类" ),
     SYSTEM_ERROR(20000, "系统异常");
+
 
     /**
      * 状态码
