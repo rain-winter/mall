@@ -3,6 +3,7 @@ package com.imooc.mall.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.zxing.WriterException;
 import com.imooc.mall.common.Constant;
 import com.imooc.mall.exception.ImoocMallException;
 import com.imooc.mall.exception.ImoocMallExceptionEnum;
@@ -18,15 +19,21 @@ import com.imooc.mall.model.request.CreateOrderReq;
 import com.imooc.mall.service.CartService;
 import com.imooc.mall.service.OrderService;
 import com.imooc.mall.utils.OrderCodeFactory;
+import com.imooc.mall.utils.QrcodeGenerator;
 import com.imooc.mall.vo.CartVO;
 import com.imooc.mall.vo.OrderItemVO;
 import com.imooc.mall.vo.OrderVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -51,6 +58,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     CartMapper cartMapper;
+
+    @Value("${file.upload.ip}")
+    String ip;
 
     /**
      * 创建订单
@@ -270,6 +280,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 取消订单
+     *
      * @param orderNo 订单号
      */
     @Override
@@ -293,5 +304,40 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    /**
+     * 生成二维码
+     *
+     * @param orderNo 订单号
+     */
+    @Override
+    public String qrcode(String orderNo) {
+        Boolean orderIsExist = orderIsExist(orderNo);
+        if (!orderIsExist) {
+            throw new ImoocMallException(ImoocMallExceptionEnum.NO_ORDER);
+        }
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        assert attributes != null;
+        HttpServletRequest request = attributes.getRequest();
+        String address = ip + ":" + request.getLocalPort();
+        String payUrl = "http://" + address + "/pay?orderNo=" + orderNo; // http://127.0.0.1/8083/pay?orderNo=orderNo
+        String pngAddress;
+        try {
+            QrcodeGenerator.generateQRCodeImage(payUrl, 350, 350, Constant.FILE_UPLOAD_DIR + orderNo + ".png");
+            pngAddress = "http://" + address + "/images/" + orderNo + ".png"; //  // http://127.0.0.1//images/orderNo.png
+        } catch (WriterException | IOException e) {
+            throw new RuntimeException(e);
+        }
+        return pngAddress;
+    }
+
+    private Boolean orderIsExist(String orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        //  订单不存在
+        if (order == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
 

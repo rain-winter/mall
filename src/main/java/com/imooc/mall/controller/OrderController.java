@@ -46,4 +46,11 @@ public class OrderController {
         orderService.cancel(orderNo);
         return ApiRestResponse.success();
     }
+
+    @PostMapping("order/qrcode")
+    public ApiRestResponse qrcode(@RequestParam String orderNo){
+      String pngAddress =  orderService.qrcode(orderNo);
+        return ApiRestResponse.success(pngAddress);
+    }
+
 }
