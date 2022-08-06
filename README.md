@@ -510,5 +510,10 @@ public String create(CreateOrderReq createOrderReq) {
 }
 ~~~
 
+## 查看订单详情
+
+~~~java
+~~~
+
 
 

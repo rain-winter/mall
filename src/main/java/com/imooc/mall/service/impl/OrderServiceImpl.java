@@ -1,6 +1,8 @@
 package com.imooc.mall.service.impl;
 
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.imooc.mall.common.Constant;
 import com.imooc.mall.exception.ImoocMallException;
 import com.imooc.mall.exception.ImoocMallExceptionEnum;
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -186,8 +189,11 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    //----------------------------------------------------------------------------------------------------
+
     /**
      * 查看订单详情
+     *
      * @param orderNo 订单编号
      * @return
      */
@@ -209,11 +215,12 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 返回一个OrderVO对象
+     *
      * @param order 一个订单
      * @return
      */
     private OrderVO getOrderVO(Order order) {
-        OrderVO orderVO = new OrderVO();
+        OrderVO orderVO = new OrderVO(); // 里面包含了订单列表和订单状态
         BeanUtils.copyProperties(order, orderVO);
         // 获取订单对应的orderItemVOList
         List<OrderItem> orderItemList = orderItemMapper.selectByOrderNo(order.getOrderNo());
@@ -228,4 +235,63 @@ public class OrderServiceImpl implements OrderService {
         orderVO.setOrderStatusName(Constant.OrderStatusEnum.codeOf(orderVO.getOrderStatus()).getValue());
         return orderVO;
     }
+
+    //--------------------------------------------------------------------------------------
+
+    /**
+     * 给顾客看的分页列表
+     *
+     * @param pageNum  第几页
+     * @param pageSize 一页几条
+     * @return
+     */
+    @Override
+    public PageInfo listForCustomer(Integer pageNum, Integer pageSize) {
+        Integer userId = UserFilter.currentUser.getId();
+        List<Order> orderList = orderMapper.selectForCustomer(userId);
+        PageHelper.startPage(pageNum, pageSize);
+        List<OrderVO> orderVOList = orderListToOrderVOList(orderList);
+        PageInfo pageInfo = new PageInfo<>(orderList);
+        pageInfo.setList(orderVOList);
+        return pageInfo;
+    }
+
+    private List<OrderVO> orderListToOrderVOList(List<Order> orderList) {
+        List<OrderVO> orderVOList = new ArrayList<>();
+        for (int i = 0; i < orderList.size(); i++) {
+            Order order = orderList.get(i);
+            OrderVO orderVO = getOrderVO(order);
+            orderVOList.add(orderVO);
+        }
+        return orderVOList;
+    }
+
+    // ----------------------------------------------------------------------------------------
+
+    /**
+     * 取消订单
+     * @param orderNo 订单号
+     */
+    @Override
+    public void cancel(String orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        // 查不到订单，报错
+        if (order == null) {
+            throw new ImoocMallException(ImoocMallExceptionEnum.NO_ORDER);
+        }
+        // 验证用户身份
+        Integer userId = UserFilter.currentUser.getId();
+        if (!order.getUserId().equals(userId)) {
+            throw new ImoocMallException(ImoocMallExceptionEnum.NOT_YOUR_ORDER);
+        }
+        if (order.getOrderStatus().equals(Constant.OrderStatusEnum.NOT_PAID.getCode())) {
+            order.setOrderStatus(Constant.OrderStatusEnum.CANCELED.getCode());
+            order.setEndTime(new Date());
+            orderMapper.updateByPrimaryKeySelective(order);
+        } else {
+            throw new ImoocMallException(ImoocMallExceptionEnum.WRONG_ORDER_STATUS);
+        }
+    }
+
 }
+

@@ -4,19 +4,12 @@ import java.util.Date;
 import java.util.List;
 
 public class OrderVO {
-    public String getOrderStatusName() {
-        return orderStatusName;
-    }
-
-    public void setOrderStatusName(String orderStatusName) {
-        this.orderStatusName = orderStatusName;
-    }
 
     private String orderNo;
 
-    private String orderStatusName;
+    private String orderStatusName; // 新加的
 
-    private List<OrderItemVO> orderItemVOList;
+    private List<OrderItemVO> orderItemVOList; // 新加的
 
     private Integer userId;
 
@@ -43,7 +36,13 @@ public class OrderVO {
     private Date createTime;
 
     private Date updateTime;
+    public String getOrderStatusName() {
+        return orderStatusName;
+    }
 
+    public void setOrderStatusName(String orderStatusName) {
+        this.orderStatusName = orderStatusName;
+    }
     public String getOrderNo() {
         return orderNo;
     }
