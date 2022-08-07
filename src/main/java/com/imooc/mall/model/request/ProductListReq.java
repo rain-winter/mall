@@ -9,6 +9,17 @@ public class ProductListReq {
 
     private String orderBy;
 
+    @Override
+    public String toString() {
+        return "ProductListReq{" +
+                "keyword='" + keyword + '\'' +
+                ", categoryId=" + categoryId +
+                ", orderBy='" + orderBy + '\'' +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
+                '}';
+    }
+
     private Integer pageNum = 1;
 
     private Integer pageSize = 10;

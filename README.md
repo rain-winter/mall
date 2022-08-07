@@ -596,8 +596,43 @@ public class OrderServiceImpl implements OrderService {
 ### 获取局域网ip
 
 ~~~java
+// 这个ip可以用手机扫描
 ip = InetAddress.getLocalHost().getHostAddress();
 ~~~
 
 # 阿里云部署
+
+~~~java
+package com.imooc.mall.config;
+
+import com.imooc.mall.common.Constant;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class MallWebMvcConfig implements WebMvcConfigurer {
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        //  以admin/**底下的文件定向到 /static/admin/
+        // 这里配置的是后台管理系统
+        registry.addResourceHandler("/admin/**").addResourceLocations("classpath:/static/admin/");
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("file:" + Constant.FILE_UPLOAD_DIR);
+    }
+}
+~~~
+
+~~~bash
+set password for root@localhost = password('123456');
+~~~
+
+0.0.0.0/0
+
+~~~bash
+nohup java -jar -Dserver.port= 8081 -
+Dspring.profiles.active= prod /root/mall-0.0.1-
+SNAPSHOT.jar > /root/null2>&1 &
+rebuild一下
+~~~
 

@@ -315,11 +315,11 @@ public class OrderServiceImpl implements OrderService {
         HttpServletRequest request = attributes.getRequest();
         // 这个ip知识和简单的网络环境（只是用wifi、4G）像是蓝牙就不太准确
         // 这个ip是本机局域网。这个ip可以用手机扫码
-        try {
-            ip = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            ip = InetAddress.getLocalHost().getHostAddress();
+//        } catch (UnknownHostException e) {
+//            throw new RuntimeException(e);
+//        }
 
         String address = ip + ":" + request.getLocalPort();
         String payUrl = "http://" + address + "/pay?orderNo=" + orderNo; // http://127.0.0.1/8083/pay?orderNo=orderNo
