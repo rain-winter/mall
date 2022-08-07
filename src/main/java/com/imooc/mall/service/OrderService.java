@@ -26,5 +26,9 @@ public interface OrderService {
 
     void pay(String orderNo);
 
+    void deliver(String orderNo);
+
+    void finish(String orderNo);
+
     // ----------------------------------------------
 }

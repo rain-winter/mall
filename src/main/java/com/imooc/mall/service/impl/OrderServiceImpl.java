@@ -18,6 +18,7 @@ import com.imooc.mall.model.pojo.Product;
 import com.imooc.mall.model.request.CreateOrderReq;
 import com.imooc.mall.service.CartService;
 import com.imooc.mall.service.OrderService;
+import com.imooc.mall.service.UserService;
 import com.imooc.mall.utils.OrderCodeFactory;
 import com.imooc.mall.utils.QrcodeGenerator;
 import com.imooc.mall.vo.CartVO;
@@ -34,6 +35,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,6 +61,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     CartMapper cartMapper;
+
+    @Autowired
+    UserService userService;
 
     @Value("${file.upload.ip}")
     String ip;
@@ -307,6 +313,14 @@ public class OrderServiceImpl implements OrderService {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         assert attributes != null;
         HttpServletRequest request = attributes.getRequest();
+        // 这个ip知识和简单的网络环境（只是用wifi、4G）像是蓝牙就不太准确
+        // 这个ip是本机局域网。这个ip可以用手机扫码
+        try {
+            ip = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+
         String address = ip + ":" + request.getLocalPort();
         String payUrl = "http://" + address + "/pay?orderNo=" + orderNo; // http://127.0.0.1/8083/pay?orderNo=orderNo
         String pngAddress;
@@ -337,6 +351,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 支付接口
+     *
      * @param orderNo 订单号
      */
     @Override
@@ -348,6 +363,42 @@ public class OrderServiceImpl implements OrderService {
         if (order.getOrderStatus() == Constant.OrderStatusEnum.NOT_PAID.getCode()) {
             order.setOrderStatus(Constant.OrderStatusEnum.PAID.getCode()); // 更改支付code为 “已付款”
             order.setPayTime(new Date()); // 设置支付时间
+            orderMapper.updateByPrimaryKeySelective(order);
+        } else {
+            throw new ImoocMallException(ImoocMallExceptionEnum.WRONG_ORDER_STATUS);
+        }
+    }
+
+    @Override
+    public void deliver(String orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if (order == null) {
+            throw new ImoocMallException(ImoocMallExceptionEnum.NO_ORDER);
+        }
+        if (order.getOrderStatus() == Constant.OrderStatusEnum.PAID.getCode()) {
+            order.setOrderStatus(Constant.OrderStatusEnum.DELIVERED.getCode()); // 更改支付code为 “已付款”
+            order.setDeliveryTime(new Date()); // 设置已发货时间
+            orderMapper.updateByPrimaryKeySelective(order);
+        } else {
+            throw new ImoocMallException(ImoocMallExceptionEnum.WRONG_ORDER_STATUS);
+        }
+    }
+
+    @Override
+    public void finish(String orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if (order == null) {
+            throw new ImoocMallException(ImoocMallExceptionEnum.NO_ORDER);
+        }
+        // 校验  普通用户 订单所属
+        if (!userService.checkAdminRole(UserFilter.currentUser)
+                && !order.getUserId().equals(UserFilter.currentUser.getId())) {
+            throw new ImoocMallException(ImoocMallExceptionEnum.NOT_YOUR_ORDER);
+        }
+        // 发货后可以完结订单 管理员可以直接完结订单
+        if (order.getOrderStatus() == Constant.OrderStatusEnum.DELIVERED.getCode()) {
+            order.setOrderStatus(Constant.OrderStatusEnum.FINISHED.getCode()); // 更改支付code为 “已付款”
+            order.setEndTime(new Date()); // 设置已发货时间
             orderMapper.updateByPrimaryKeySelective(order);
         } else {
             throw new ImoocMallException(ImoocMallExceptionEnum.WRONG_ORDER_STATUS);

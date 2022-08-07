@@ -572,6 +572,13 @@ public class OrderServiceImpl implements OrderService {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         assert attributes != null;
         HttpServletRequest request = attributes.getRequest();
+        // 这个ip知识和简单的网络环境（只是用wifi、4G）像是蓝牙就不太准确
+        // 这个ip是本机局域网。这个ip可以用手机扫码。上线后换成自己的ip
+        try {
+            ip = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
         String address = ip + ":" + request.getLocalPort();
         String payUrl = "http://" + address + "/pay?orderNo=" + orderNo; // http://127.0.0.1/8083/pay?orderNo=orderNo
         String pngAddress;
@@ -584,7 +591,13 @@ public class OrderServiceImpl implements OrderService {
         return pngAddress;
     }
 }
-
-
 ~~~
+
+### 获取局域网ip
+
+~~~java
+ip = InetAddress.getLocalHost().getHostAddress();
+~~~
+
+# 阿里云部署
 
