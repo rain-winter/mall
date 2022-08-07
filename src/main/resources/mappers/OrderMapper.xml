@@ -226,4 +226,10 @@
     order by update_time desc
   </select>
 
+  <select id="selectAllForAdmin" resultMap="BaseResultMap" parameterType="integer">
+    select
+    <include refid="Base_Column_List"/>
+    from imooc_mall_order
+    order by update_time desc
+  </select>
 </mapper>

@@ -21,4 +21,5 @@ public interface OrderMapper {
     Order selectByOrderNo(String orderNo);
 
     List<Order> selectForCustomer(Integer userId);
+    List<Order> selectAllForAdmin();
 }

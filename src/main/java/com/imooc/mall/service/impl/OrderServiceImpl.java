@@ -77,8 +77,7 @@ public class OrderServiceImpl implements OrderService {
         // 2. 从购物车查找已经勾选的商品
         List<CartVO> cartVOList = cartService.list(userId); // 选中的 商品列表
         ArrayList<CartVO> cartVOListTmp = new ArrayList<>();
-        for (int i = 0; i < cartVOList.size(); i++) {
-            CartVO cartVO = cartVOList.get(i);
+        for (CartVO cartVO : cartVOList) {
             System.out.println(cartVO);
             // 筛选出选中的商品
             if (cartVO.getSelected().equals(Constant.Cart.CHECKED)) {
@@ -95,9 +94,8 @@ public class OrderServiceImpl implements OrderService {
         // 5.把购物车对象转为订单item对象
         List<OrderItem> orderItemList = cartVOListToOrderItemList(cartVOList);
         // 扣库存
-        for (int i = 0; i < orderItemList.size(); i++) {
+        for (OrderItem orderItem : orderItemList) {
             // 拿到该商品
-            OrderItem orderItem = orderItemList.get(i);
             Product product = productMapper.selectByPrimaryKey(orderItem.getProductId());
             int stock = product.getStock() - orderItem.getQuantity();
             if (stock < 0) {
@@ -125,8 +123,7 @@ public class OrderServiceImpl implements OrderService {
         // 插入到order表
         orderMapper.insertSelective(order);
         // 循环保存每个商品到order_item表
-        for (int i = 0; i < orderItemList.size(); i++) {
-            OrderItem orderItem = orderItemList.get(i);
+        for (OrderItem orderItem : orderItemList) {
             orderItem.setOrderNo(orderNo);
             orderItemMapper.insertSelective(orderItem);
         }
@@ -136,13 +133,11 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 求购物车所有物品得总价
      *
-     * @param orderItemList
-     * @return
+     * @param orderItemList 订单子项
      */
     private Integer totalPrice(List<OrderItem> orderItemList) {
         Integer totalPrice = 0;
-        for (int i = 0; i < orderItemList.size(); i++) {
-            OrderItem orderItem = orderItemList.get(i);
+        for (OrderItem orderItem : orderItemList) {
             totalPrice += orderItem.getTotalPrice();
         }
         return totalPrice;
@@ -150,8 +145,7 @@ public class OrderServiceImpl implements OrderService {
 
     // 清空购物车
     private void cleanCart(List<CartVO> cartVOList) {
-        for (int i = 0; i < cartVOList.size(); i++) {
-            CartVO cartVO = cartVOList.get(i);
+        for (CartVO cartVO : cartVOList) {
             cartMapper.deleteByPrimaryKey(cartVO.getId());
         }
     }
@@ -160,12 +154,10 @@ public class OrderServiceImpl implements OrderService {
      * 生成订单子项
      *
      * @param cartVOList 用户选中的商品列表
-     * @return
      */
     private List<OrderItem> cartVOListToOrderItemList(List<CartVO> cartVOList) {
         List<OrderItem> orderItemList = new ArrayList<OrderItem>();
-        for (int i = 0; i < cartVOList.size(); i++) {
-            CartVO cartVO = cartVOList.get(i);
+        for (CartVO cartVO : cartVOList) {
             OrderItem orderItem = new OrderItem();
             orderItem.setProductId(cartVO.getProductId());
             // 记录商品快照信息
@@ -182,11 +174,10 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 判断选中的商品 库存、数量、上下架是否合规
      *
-     * @param cartVOList
+     * @param cartVOList 、
      */
     public void validSaleStatusAndStock(List<CartVO> cartVOList) {
-        for (int i = 0; i < cartVOList.size(); i++) {
-            CartVO cartVO = cartVOList.get(i);
+        for (CartVO cartVO : cartVOList) {
             Product product = productMapper.selectByPrimaryKey(cartVO.getProductId());
             // 判断商品是否存在，商品是否上架
             if (product == null || product.getStatus().equals(Constant.SaleStatus.NOT_SALE)) {
@@ -227,7 +218,7 @@ public class OrderServiceImpl implements OrderService {
      * 返回一个OrderVO对象
      *
      * @param order 一个订单
-     * @return
+     * @return OrderVO
      */
     private OrderVO getOrderVO(Order order) {
         OrderVO orderVO = new OrderVO(); // 里面包含了订单列表和订单状态
@@ -235,8 +226,7 @@ public class OrderServiceImpl implements OrderService {
         // 获取订单对应的orderItemVOList
         List<OrderItem> orderItemList = orderItemMapper.selectByOrderNo(order.getOrderNo());
         List<OrderItemVO> orderItemVOList = new ArrayList();
-        for (int i = 0; i < orderItemList.size(); i++) {
-            OrderItem orderItem = orderItemList.get(i);
+        for (OrderItem orderItem : orderItemList) {
             OrderItemVO orderItemVO = new OrderItemVO();
             BeanUtils.copyProperties(orderItem, orderItemVO);
             orderItemVOList.add(orderItemVO);
@@ -253,7 +243,7 @@ public class OrderServiceImpl implements OrderService {
      *
      * @param pageNum  第几页
      * @param pageSize 一页几条
-     * @return
+     * @return  pageinfo
      */
     @Override
     public PageInfo listForCustomer(Integer pageNum, Integer pageSize) {
@@ -268,8 +258,7 @@ public class OrderServiceImpl implements OrderService {
 
     private List<OrderVO> orderListToOrderVOList(List<Order> orderList) {
         List<OrderVO> orderVOList = new ArrayList<>();
-        for (int i = 0; i < orderList.size(); i++) {
-            Order order = orderList.get(i);
+        for (Order order : orderList) {
             OrderVO orderVO = getOrderVO(order);
             orderVOList.add(orderVO);
         }
@@ -332,12 +321,20 @@ public class OrderServiceImpl implements OrderService {
 
     private Boolean orderIsExist(String orderNo) {
         Order order = orderMapper.selectByOrderNo(orderNo);
-        //  订单不存在
-        if (order == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return order != null;
     }
+
+    // ----------------------------------------------
+
+    @Override
+    public PageInfo listForAdmin(Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<Order> orderList = orderMapper.selectAllForAdmin();
+        List<OrderVO> orderVOList = orderListToOrderVOList(orderList);
+        PageInfo pageInfo = new PageInfo<>(orderList);
+        pageInfo.setList(orderVOList);
+        return pageInfo;
+    }
+
 }
 

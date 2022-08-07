@@ -515,5 +515,76 @@ public String create(CreateOrderReq createOrderReq) {
 ~~~java
 ~~~
 
+## 生成二维码
 
+添加依赖
+
+~~~xml
+<dependency>
+    <groupId>com.google.zxing</groupId>
+    <artifactId>javase</artifactId>
+    <version>3.5.0</version>
+</dependency>
+~~~
+
+~~~java
+public class QrcodeGenerator {
+    public static void generateQRCodeImage(String text, int width, int height, String filePath) throws WriterException, IOException {
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
+        Path path = FileSystems.getDefault().getPath(filePath);
+        MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
+    }
+
+    public static void main(String[] args) throws IOException, WriterException {
+        generateQRCodeImage("hello word",200,200, "D:\\\\File\\\\GitHub\\\\mall\\\\src\\\\main\\\\resources\\\\static\\\\QRTest.png");
+    }
+}
+
+~~~
+
+在`application.properties`定义路径
+
+~~~properties
+# application.properties
+file.upload.ip=127.0.0.1
+~~~
+
+在`orderServiceImpl`取值
+
+~~~java
+/**
+ * 描述: 订单 Service实现类
+ */
+@Service
+public class OrderServiceImpl implements OrderService {
+    /**
+     * 生成二维码
+     *
+     * @param orderNo 订单号
+     */
+    @Override
+    public String qrcode(String orderNo) {
+        Boolean orderIsExist = orderIsExist(orderNo);
+        if (!orderIsExist) {
+            throw new ImoocMallException(ImoocMallExceptionEnum.NO_ORDER);
+        }
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        assert attributes != null;
+        HttpServletRequest request = attributes.getRequest();
+        String address = ip + ":" + request.getLocalPort();
+        String payUrl = "http://" + address + "/pay?orderNo=" + orderNo; // http://127.0.0.1/8083/pay?orderNo=orderNo
+        String pngAddress;
+        try {
+            QrcodeGenerator.generateQRCodeImage(payUrl, 350, 350, Constant.FILE_UPLOAD_DIR + orderNo + ".png");
+            pngAddress = "http://" + address + "/images/" + orderNo + ".png"; //  // http://127.0.0.1//images/orderNo.png
+        } catch (WriterException | IOException e) {
+            throw new RuntimeException(e);
+        }
+        return pngAddress;
+    }
+}
+
+
+~~~
 
