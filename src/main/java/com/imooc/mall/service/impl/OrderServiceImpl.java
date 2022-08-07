@@ -243,7 +243,7 @@ public class OrderServiceImpl implements OrderService {
      *
      * @param pageNum  第几页
      * @param pageSize 一页几条
-     * @return  pageinfo
+     * @return pageinfo
      */
     @Override
     public PageInfo listForCustomer(Integer pageNum, Integer pageSize) {
@@ -324,8 +324,7 @@ public class OrderServiceImpl implements OrderService {
         return order != null;
     }
 
-    // ----------------------------------------------
-
+    // 管理员看的分页
     @Override
     public PageInfo listForAdmin(Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
@@ -336,5 +335,23 @@ public class OrderServiceImpl implements OrderService {
         return pageInfo;
     }
 
+    /**
+     * 支付接口
+     * @param orderNo 订单号
+     */
+    @Override
+    public void pay(String orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if (order == null) {
+            throw new ImoocMallException(ImoocMallExceptionEnum.NO_ORDER);
+        }
+        if (order.getOrderStatus() == Constant.OrderStatusEnum.NOT_PAID.getCode()) {
+            order.setOrderStatus(Constant.OrderStatusEnum.PAID.getCode()); // 更改支付code为 “已付款”
+            order.setPayTime(new Date()); // 设置支付时间
+            orderMapper.updateByPrimaryKeySelective(order);
+        } else {
+            throw new ImoocMallException(ImoocMallExceptionEnum.WRONG_ORDER_STATUS);
+        }
+    }
 }
 
