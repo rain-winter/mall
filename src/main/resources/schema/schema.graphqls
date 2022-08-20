@@ -1,0 +1,17 @@
+type Query {
+    hello(name:String): String
+}
+
+type Mutation {
+    login(loginInput:LoginInput):User
+}
+
+input LoginInput {
+    userName: String!
+    password: String!
+}
+type User {
+    id:ID
+    username:String
+    email:String
+}
