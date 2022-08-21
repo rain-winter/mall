@@ -25,6 +25,9 @@ sa-token:
 
 server:
   port: 8083
+  servlet:
+    context-path: /api
 file:
   upload: 2212
   ip: 0.0.0.0
+

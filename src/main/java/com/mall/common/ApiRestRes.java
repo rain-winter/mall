@@ -64,7 +64,16 @@ public class ApiRestRes<T> {
     public static <T> ApiRestRes<T> error(MallExceptionEnum ex) {
         // 调用两参构造方法返回
         // 用的是异常枚举的参数
-        return new ApiRestRes(ex.getCode(), ex.getMsg());
+        return new ApiRestRes<>(ex.getCode(), ex.getMsg());
+    }
+
+    @Override
+    public String toString() {
+        return "ApiRestRes{" +
+                "status=" + status +
+                ", msg='" + msg + '\'' +
+                ", data=" + data +
+                '}';
     }
 
     public Integer getStatus() {

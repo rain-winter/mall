@@ -1,8 +1,6 @@
 package com.mall.exception;
 
-import java.net.InetAddress;
-
-public enum MallExceptionEnum {
+public enum MallExceptionEnum  {
     NEED_USER_NAME(10001, "用户名不能为空"),
     NEED_PASSWORD(10002, "密码不能为空"),
     PASSWORD_TO_SHORT(10003, "密码不能小于八位"),

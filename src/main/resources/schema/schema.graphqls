@@ -10,8 +10,11 @@ input LoginInput {
     userName: String!
     password: String!
 }
+
 type User {
     id:ID
     username:String
     email:String
 }
+
+
