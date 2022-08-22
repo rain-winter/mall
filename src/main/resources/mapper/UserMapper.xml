@@ -21,4 +21,12 @@
         where username = #{userName,jdbcType=VARCHAR}
         and password = #{password}
     </select>
+    <select id="selectByName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from mall_user
+        where
+        username = #{userName,jdbcType=VARCHAR}
+
+    </select>
 </mapper>

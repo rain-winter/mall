@@ -81,6 +81,8 @@
             <version>1.30.0</version>
         </dependency>
 
+
+
         <!-- graphql start-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -109,6 +111,45 @@
             <version>2.7.3</version>
             <scope>runtime</scope>
         </dependency>
+
+        <!-- Sa-Token 权限认证, 在线文档：http://sa-token.dev33.cn/ -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-spring-boot-starter</artifactId>
+            <version>1.30.0</version>
+        </dependency>
+
+        <!-- Sa-Token 插件：整合SSO -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-sso</artifactId>
+            <version>1.30.0</version>
+        </dependency>
+
+        <!-- Sa-Token 整合 Redis (使用 jackson 序列化方式) -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-dao-redis-jackson</artifactId>
+            <version>1.30.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
+
+        <!-- 视图引擎（在前后端不分离模式下提供视图支持） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!-- Http请求工具（在模式三的单点注销功能下用到，如不需要可以注释掉） -->
+        <dependency>
+            <groupId>com.ejlchina</groupId>
+            <artifactId>okhttps</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+
     </dependencies>
 
     <build>
