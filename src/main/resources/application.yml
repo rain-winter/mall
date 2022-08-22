@@ -1,11 +1,23 @@
 spring:
+  web:
+    resources:
+      static-locations: classpath:/static/
   datasource:
     name: mall_datasource
     username: root
     password: 123456
     url: jdbc:mysql://127.0.0.1:3306/mall_v2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
-
+server:
+  port: 8083
+  servlet:
+    # 设置api前缀
+    context-path: /api
+file:
+  upload:
+    dir: D:/File/Github/mall-dev/src/main/resources/static/upload/
+    ip: 0.0.0.0
+#
 # Sa-Token配置
 sa-token:
   # token 名称 (同时也是cookie名称)
@@ -40,11 +52,5 @@ sa-token:
     # 接口调用秘钥（用于SSO模式三的单点注销功能）
     secretkey: kQwIOrYvnXmSDkwEiFngrKidMcdrgKor
 
-server:
-  port: 8083
-  servlet:
-    context-path: /api
-file:
-  upload: 2212
-  ip: 0.0.0.0
+
 

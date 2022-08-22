@@ -1,14 +1,33 @@
 package com.mall.config;
 
+import com.mall.common.Constant;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
 
 @Configuration
-public class MallWebMvcConfig implements WebMvcConfigurer {
+
+public class MallWebMvcConfig extends WebMvcConfigurationSupport {
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        //  以admin/**底下的文件定向到 /static/admin/
+        // 这里配置的是后台管理系统
+        registry.addResourceHandler("/admin/**").addResourceLocations("classpath:/static/admin/");
+        System.out.println(Constant.FILE_UPLOAD_DIR);
+//
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("file:" + Constant.FILE_UPLOAD_DIR);
+
+// 处理jquery
+//        registry.addResourceHandler("/webjars/**")
+//                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+//        super.addResourceHandlers(registry);
+    }
+
 
     /**
      * 跨域
+     *
      * @param registry
      */
     @Override
@@ -20,6 +39,6 @@ public class MallWebMvcConfig implements WebMvcConfigurer {
                 .maxAge(168000)  //预检间隔时间
                 .allowedHeaders("*")  //允许头部设置
                 .allowCredentials(true);  //是否发送 cookie
-        WebMvcConfigurer.super.addCorsMappings(registry);
+//        WebMvcConfigurer.super.addCorsMappings(registry);
     }
 }

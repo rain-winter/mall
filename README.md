@@ -121,6 +121,8 @@ public class GraphqlExceptionHandler implements DataFetcherExceptionHandler {
 
 # sa-token
 
+[官网]: https://sa-token.dev33.cn/
+
 # validation
 
 1. 添加依赖
@@ -218,5 +220,222 @@ public class GlobalExceptionHandler {
         return ApiRestRes.error(MallExceptionEnum.REQUEST_PARAM_ERROR.getCode(), list.toString());
     }
 }
+~~~
+
+# mybatis-plus
+
+[官网]: https://baomidou.com/
+
+~~~xml
+<dependency>
+    <groupId>com.baomidou</groupId>
+    <artifactId>mybatis-plus-boot-starter</artifactId>
+    <version>最新版本</version>
+</dependency>
+~~~
+
+1. `com.mall.model.pojo.User.java`是我们得实体类
+
+~~~java
+// lombok 插件。使用该注解便可以实现setter/getter/
+@Data
+@TableName("mall_user") // 设置表明
+public class User {
+    @TableId(type = IdType.AUTO) // 设置主键递增
+    private Integer id;
+    private String username;
+}
+~~~
+
+2. `com.mall.model.mapper.UserMapper`。UserMapper继承了BaseMapper，就有了CURD的能力。
+
+~~~java
+public interface UserMapper extends BaseMapper<User> {
+    // 自己得方法
+    User selectLogin(@Param("userName") String userName, @Param("password") String password);
+}
+~~~
+
+3. 如果没有指定mapperXML的路径，那么它就在`resources/mapper`下面
+
+~~~xml
+<!-- UserMapper.xml -->
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mall.model.mapper.UserMapper">
+       <select id="selectLogin" parameterType="map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from mall_user
+        where username = #{userName,jdbcType=VARCHAR}
+        and password = #{password}
+    </select>
+</mapper>
+~~~
+
+4. `Application`中指定mapper的路径
+
+~~~java
+@MapperScan("com.mall.model.mapper")
+~~~
+
+# log4j2
+
+1. log4j2的依赖引入
+
+~~~xml
+<dependency>
+   <groupId>org.springframework.boot</groupId>
+   <artifactId>spring-boot-starter-log4j2</artifactId>
+</dependency>
+~~~
+
+2. 排除springboot内置得日志组件
+
+~~~xml
+<!-- 排除 Spring-boot-starter 默认的日志配置 这种其实是错误的 排除不干净 -->
+<!-- boot2.6应该可以这样。但是boot2.7不可以 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+~~~
+
+~~~xml
+<!-- 排除 Spring-boot-starter 默认的日志配置 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+~~~
+
+3. 放在`resources`低下得`log4j2.xml`
+
+~~~xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="fatal">
+    <Properties>
+        <!--  ${sys:user.home}/logs 配置日志路径 -->
+        <Property name="baseDir" value="D:\File\Github\mall-dev\src\logs"/>
+    </Properties>
+</Configuration>
+~~~
+
+如果`log4j2.xml`没在这里需要在application里配置
+
+~~~js
+logging:
+  config:
+    classpath: log4j2.xml
+~~~
+
+# 文件上传
+
+1. 在`application.yaml`中定义文件上传的地址
+
+~~~yaml
+file:
+  upload:
+    dir: D:/File/Github/mall-dev/src/main/resources/static/upload/
+    ip: 0.0.0.0
+~~~
+
+2. **spring boot 2.7**需要在`application.yaml`中定义这个，不然不能显示图片
+
+~~~yaml
+spring:
+  web:
+    resources:
+      static-locations: classpath:/static/
+~~~
+
+3. 在控制器层写方法
+
+~~~java
+@PostMapping("admin/upload/file")
+    public ApiRestRes upload(HttpServletRequest httpServletRequest,
+                                  @RequestParam("file") MultipartFile file) {
+        String fileName = file.getOriginalFilename();
+        System.out.println("fileName:" + fileName);
+        String suffixName = fileName.substring(fileName.lastIndexOf(".")); // 截取。后面的后缀
+        // 生成文件名UUID
+        UUID uuid = UUID.randomUUID();
+        String newFileName = uuid.toString() + suffixName;
+        // 创建文件  fileDir 是文件夹的名字
+        File fileDir = new File(Constant.FILE_UPLOAD_DIR);
+        System.out.println("Constant.FILE_UPLOAD_DIR:" + Constant.FILE_UPLOAD_DIR);
+        System.out.println("fileDir:" + fileDir);
+        File destFile = new File(Constant.FILE_UPLOAD_DIR + newFileName);
+        System.out.println("destFile:" + destFile);
+        if (!fileDir.exists()) {
+            if (!fileDir.mkdir()) {
+                throw new MallException(MallExceptionEnum.MKDIR_FAILED);
+            }
+        }
+        try {
+            file.transferTo(destFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+        try {
+            return ApiRestRes.success(getHost(new URI(httpServletRequest.getRequestURI() + "")) + "/images/" + newFileName);
+        } catch (URISyntaxException e) {
+            return ApiRestRes.error(MallExceptionEnum.UPLOAD_FAILED);
+        }
+    }
+
+    private URI getHost(URI uri) {
+        URI effectiveURI;
+        try {
+            effectiveURI = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), null, null, null);
+        } catch (URISyntaxException e) {
+            effectiveURI = null;
+        }
+        return effectiveURI;
+    }
+~~~
+
+4. 在`MallWebMvcConfig`加入代码
+
+~~~java
+public class MallWebMvcConfig extends WebMvcConfigurationSupport {
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        //  以admin/**底下的文件定向到 /static/admin/
+        registry.addResourceHandler("/admin/**").addResourceLocations("classpath:/static/admin/");
+        // 这里配置的是 显示图片
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("file:" + Constant.FILE_UPLOAD_DIR);
+    }
+
+    /**
+     * 跨域
+     */
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry
+                .addMapping("/**")  //设置允许跨域访问的路径
+                .allowedOriginPatterns("*")  //设置允许跨域访问的源
+                .allowedMethods("*")  //允许跨域请求的方法
+                .maxAge(168000)  //预检间隔时间
+                .allowedHeaders("*")  //允许头部设置
+                .allowCredentials(true);  //是否发送 cookie
+    }
+}
+
 ~~~
 

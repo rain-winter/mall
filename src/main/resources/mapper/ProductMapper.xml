@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mall.model.mapper.ProductMapper">
+    <resultMap id="BaseResultMap" type="com.mall.model.pojo.Product">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="image" jdbcType="VARCHAR" property="image"/>
+        <result column="detail" jdbcType="VARCHAR" property="detail"/>
+        <result column="category_id" jdbcType="INTEGER" property="categoryId"/>
+        <result column="price" jdbcType="INTEGER" property="price"/>
+        <result column="stock" jdbcType="INTEGER" property="stock"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, `name`, image, detail, category_id, price, stock, `status`, create_time, update_time
+    </sql>
+    <!-- 根据名字查重 -->
+    <select id="selectByName" parameterType="java.lang.String"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from mall_product
+        where name = #{name,jdbcType=VARCHAR}
+    </select>
+
+    <!--  批量上下架商品  -->
+    <update id="batchUpdateSellStatus">
+        update mall_product
+        set status = #{sellStatus}
+        where id in
+        <foreach collection="ids" close=")" item="id" open="("
+                 separator=",">
+            #{id}
+        </foreach>
+        <!-- (id,id,id) -->
+    </update>
+
+    <select id="selectListForAdmin" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from mall_product
+        order by update_time desc
+    </select>
+
+    <!--  前台列表  -->
+    <select id="selectList" parameterType="com.mall.model.query.ProductListQuery"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from mall_product
+        <where>
+            <if test="query.keyword != null">
+                and name like #{query.keyword}
+            </if>
+            <if test="query.categoryIds != null">
+                and category_id in
+                <foreach collection="query.categoryIds" close=")" item="item" open="("
+                         separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            and status = 1
+        </where>
+        order by update_time desc
+    </select>
+</mapper>

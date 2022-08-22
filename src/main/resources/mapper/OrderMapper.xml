@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mall.model.mapper.OrderMapper">
+    <resultMap id="BaseResultMap" type="com.mall.model.pojo.Order">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+        <result column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="total_price" jdbcType="INTEGER" property="totalPrice" />
+        <result column="receiver_name" jdbcType="VARCHAR" property="receiverName" />
+        <result column="receiver_mobile" jdbcType="VARCHAR" property="receiverMobile" />
+        <result column="receiver_address" jdbcType="VARCHAR" property="receiverAddress" />
+        <result column="order_status" jdbcType="INTEGER" property="orderStatus" />
+        <result column="postage" jdbcType="INTEGER" property="postage" />
+        <result column="payment_type" jdbcType="INTEGER" property="paymentType" />
+        <result column="delivery_time" jdbcType="TIMESTAMP" property="deliveryTime" />
+        <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, order_no, user_id, total_price, receiver_name, receiver_mobile, receiver_address,
+        order_status, postage, payment_type, delivery_time, pay_time, end_time, create_time,
+        update_time
+    </sql>
+    <select id="selectByOrderNo" resultMap="BaseResultMap" parameterType="string">
+        select
+        <include refid="Base_Column_List"/>
+        from mall_order
+        where order_no = #{orderNo}
+    </select>
+
+    <select id="selectForCustomer" resultMap="BaseResultMap" parameterType="integer">
+        select
+        <include refid="Base_Column_List"/>
+        from mall_order
+        where user_id = #{userId}
+        order by update_time desc
+    </select>
+
+    <select id="selectAllForAdmin" resultMap="BaseResultMap" parameterType="integer">
+        select
+        <include refid="Base_Column_List"/>
+        from mall_order
+        order by update_time desc
+    </select>
+</mapper>

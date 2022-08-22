@@ -25,9 +25,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (user == null) {
             throw new MallException(MallExceptionEnum.WRONG_PASSWORD);
         }
-        StpUtil.login(user.getId());
-//        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
-//        System.out.println(tokenInfo);
         return user;
     }
 
@@ -49,5 +46,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (count == 0) {
             throw new MallException(MallExceptionEnum.INSERT_FAILED);
         }
+    }
+
+    @Override
+    public void updateInformation(User user) {
+        // 更新个人签名
+        int updateCount = userMapper.updateById(user);
+//        int updateCount = userMapper.updateByPrimaryKeySelective(user);
+        if (updateCount > 1) {
+            // ===1 true   >1 false
+            try {
+                throw new MallException(MallExceptionEnum.UPDATE_FAILED);
+            } catch (MallException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public boolean checkAdminRole(User user) {
+        // 1 普通用户  2 管理员
+        return user.getRole().equals(2);
     }
 }

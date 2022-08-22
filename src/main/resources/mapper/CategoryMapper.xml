@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mall.model.mapper.CategoryMapper">
+    <resultMap id="BaseResultMap" type="com.mall.model.pojo.Category">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="parent_id" jdbcType="INTEGER" property="parentId"/>
+        <result column="order_num" jdbcType="INTEGER" property="orderNum"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, `name`, `type`, parent_id, order_num, create_time, update_time
+    </sql>
+    <!--  通过名字查找分类-->
+    <select id="selectByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from mall_category
+        where name = #{name,jdbcType=VARCHAR}
+    </select>
+    <!--  分页 查询所有数据  -->
+    <select id="selectList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from mall_category
+    </select>
+
+    <!-- 通过其父id查找数据 -->
+    <select id="selectCategoriesByParentId" parameterType="int" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from mall_category
+        where parent_id = #{parentId}
+    </select>
+</mapper>

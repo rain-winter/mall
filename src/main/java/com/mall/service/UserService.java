@@ -9,4 +9,8 @@ public interface UserService extends IService<User> {
 
     void register(String userName, String password)
             throws MallException;
+
+    void updateInformation(User user);
+
+    boolean checkAdminRole(User user);
 }

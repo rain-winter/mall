@@ -1,57 +1,34 @@
 package com.mall.controller;
 
-import cn.dev33.satoken.stp.SaTokenInfo;
-import cn.dev33.satoken.stp.StpUtil;
-import cn.dev33.satoken.util.SaResult;
 import com.mall.common.ApiRestRes;
+import com.mall.common.Constant;
 import com.mall.exception.MallException;
 import com.mall.exception.MallExceptionEnum;
 import com.mall.model.pojo.User;
 import com.mall.model.request.LoginReq;
 import com.mall.service.UserService;
+import com.mysql.cj.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/user")
 public class UserController {
     @Autowired
     UserService userService;
 
-    @GetMapping("/islogin")
-    public String isLogin(){
-        return StpUtil.getLoginId("没有登录");
-    }
-
-    @GetMapping("/login")
-    public Object login(){
-        // 第1步，先登录上
-        StpUtil.login(10001);
-        // 第2步，获取 Token  相关参数
-        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
-        // 第3步，返回给前端
-        return SaResult.data(tokenInfo);
-    }
-
     @PostMapping("/login")
-    public ApiRestRes login(@RequestBody @Valid LoginReq loginReq){
-        Map res = new HashMap();
+    public ApiRestRes login(@RequestBody @Valid LoginReq loginReq, HttpSession session) {
         User user = userService.login(loginReq.getUserName(), loginReq.getPassword());
         user.setPassword(null); // 保存用户信息时不保存密码
-        ;
-        res.put("user",user);
-        res.put("token",SaResult.data(StpUtil.getTokenValue()));
         // 第3步，返回给前端
-        return ApiRestRes.success(res);
+        session.setAttribute(Constant.IMOOC_MALL_USER, user);
+        return ApiRestRes.success(user);
     }
 
     @PostMapping("/register")
@@ -65,5 +42,70 @@ public class UserController {
 //        }
         userService.register(userName, password);
         return ApiRestRes.success();
+    }
+
+    /**
+     * 更新个性签名
+     *
+     * @param session
+     * @param signature
+     * @return
+     */
+    @PostMapping("/user/update")
+    @ResponseBody
+    public ApiRestRes updateUserInfo(HttpSession session, @RequestParam("signature") String signature) {
+        User currentUser = (User) session.getAttribute(Constant.IMOOC_MALL_USER);
+        if (currentUser == null) {
+            return ApiRestRes.error(MallExceptionEnum.NEED_LOGIN);
+        }
+        User user = new User();
+        user.setId(currentUser.getId());
+        user.setPersonalizedSignature(signature);
+        userService.updateInformation(user);
+        return ApiRestRes.success();
+    }
+
+    /**
+     * 退出
+     *
+     * @param session
+     * @return
+     */
+    @PostMapping("/user/logout")
+    @ResponseBody
+    public ApiRestRes logout(HttpSession session) {
+        // 在 session中删除
+        session.removeAttribute(Constant.IMOOC_MALL_USER);
+        return ApiRestRes.success();
+    }
+
+    /**
+     * 管理员登录
+     *
+     * @param userName
+     * @param password
+     * @param session
+     * @return
+     * @throws MallException
+     */
+    @PostMapping("/adminlogin")
+    @ResponseBody
+    public ApiRestRes adminLogin(@RequestParam("userName") String userName, @RequestParam("password") String password, HttpSession session) throws MallException {
+        if (StringUtils.isNullOrEmpty(userName)) {
+            return ApiRestRes.error(MallExceptionEnum.NEED_USER_NAME);
+        }
+        if (StringUtils.isNullOrEmpty(password)) {
+            return ApiRestRes.error(MallExceptionEnum.NEED_PASSWORD);
+        }
+        User user = userService.login(userName, password); // 调用service层的登录方法
+
+        if (userService.checkAdminRole(user)) {
+            // 是管理员 登录
+            user.setPassword(null);
+            session.setAttribute(Constant.IMOOC_MALL_USER, user);
+        } else {
+            return ApiRestRes.error(MallExceptionEnum.NEED_ADMIN);
+        }
+        return ApiRestRes.success(user);
     }
 }

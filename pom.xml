@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.mall</groupId>
     <artifactId>demo</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>mall2.0</version>
     <name>mall</name>
     <description>Demo project for Spring Boot</description>
     <properties>
@@ -40,6 +40,36 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <!-- 排除 Spring-boot-starter 默认的日志配置 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!--   添加log4j2     -->
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-log4j2</artifactId>
+                    <!-- 不用指定版本，他自己下-->
+                </dependency>
+        <!-- 分页的依赖 -->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+            <version>1.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>25.1-jre</version>
         </dependency>
         <!-- mybatis-plus-->
         <dependency>
@@ -80,8 +110,12 @@
             <artifactId>sa-token-spring-boot-starter</artifactId>
             <version>1.30.0</version>
         </dependency>
-
-
+        <!--生成二维码-->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.5.0</version>
+        </dependency>
 
         <!-- graphql start-->
         <dependency>
@@ -125,29 +159,11 @@
             <artifactId>sa-token-sso</artifactId>
             <version>1.30.0</version>
         </dependency>
-
-        <!-- Sa-Token 整合 Redis (使用 jackson 序列化方式) -->
-        <dependency>
-            <groupId>cn.dev33</groupId>
-            <artifactId>sa-token-dao-redis-jackson</artifactId>
-            <version>1.30.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-pool2</artifactId>
-        </dependency>
-
-        <!-- 视图引擎（在前后端不分离模式下提供视图支持） -->
+        <!-- AOP 统一打印请求和返回信息-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-
-        <!-- Http请求工具（在模式三的单点注销功能下用到，如不需要可以注释掉） -->
-        <dependency>
-            <groupId>com.ejlchina</groupId>
-            <artifactId>okhttps</artifactId>
-            <version>3.1.1</version>
+            <artifactId>spring-boot-starter-aop</artifactId>
+            <version>2.6.2</version>
         </dependency>
 
     </dependencies>
