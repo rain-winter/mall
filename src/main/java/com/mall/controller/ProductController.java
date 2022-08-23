@@ -6,14 +6,22 @@ import com.mall.model.pojo.Product;
 import com.mall.model.request.ProductListReq;
 import com.mall.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * 给用户看的列表
  */
 @RestController
+@Validated
 public class ProductController {
 
     @Autowired

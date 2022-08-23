@@ -12,6 +12,7 @@ import com.mall.service.ProductService;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -30,6 +32,7 @@ import java.util.UUID;
  * 后台商品管理Controller
  */
 @RestController
+@Validated // 必须加上这个注解才可以验证
 public class ProductAdmin {
     @Autowired
     ProductService productService;
@@ -75,9 +78,8 @@ public class ProductAdmin {
     /**
      * 批量上下架商品
      *
-     * @param ids
-     * @param sellStatus
-     * @return
+     * @param ids 多个ID
+     * @param sellStatus 商品上架状态：0-下架，1-上架
      */
     @PostMapping("admin/product/batchUpdateSellStatus")
     public ApiRestRes batchUpdateSellStatus(@RequestParam Integer[] ids, @RequestParam Integer sellStatus) {
@@ -92,8 +94,7 @@ public class ProductAdmin {
      * @return
      */
     @PostMapping("/admin/product/list")
-    public ApiRestRes list(@RequestParam Integer pageNum,
-                                @RequestParam Integer pageSize) {
+    public ApiRestRes list(@RequestParam Integer pageNum, @RequestParam Integer pageSize) {
         PageInfo pageInfo = productService.listForAdmin(pageNum, pageSize);
         return ApiRestRes.success(pageInfo);
     }

@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 
@@ -29,6 +31,7 @@ import java.util.List;
  * 目录Controller
  */
 @Controller
+@Validated // 必须加上这个注解才可以验证
 public class CategoryController {
     @Autowired
     UserService userService;
@@ -101,11 +104,10 @@ public class CategoryController {
     /**
      * @param pageNum  第几页
      * @param pageSize 多少条数据
-     * @return
      */
     @PostMapping("admin/category/list")
     @ResponseBody
-    public ApiRestRes listCategoryForAdmin(@RequestParam Integer pageNum, @RequestParam Integer pageSize) {
+    public ApiRestRes listCategoryForAdmin(@RequestParam Integer pageNum,@RequestParam Integer pageSize) {
         PageInfo pageInfo = categoryService.listForAdmin(pageNum, pageSize);
         return ApiRestRes.success(pageInfo);
     }

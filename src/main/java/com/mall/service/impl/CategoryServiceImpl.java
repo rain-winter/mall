@@ -69,7 +69,6 @@ public class CategoryServiceImpl implements CategoryService {
         Category categoryOld = categoryMapper.selectById(id);
         // 查不到，无法删除
         if (categoryOld == null) {
-
             throw new MallException(MallExceptionEnum.DELETE_FAILED);
         }
         int count = categoryMapper.deleteById(id);

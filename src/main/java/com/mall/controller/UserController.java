@@ -9,15 +9,15 @@ import com.mall.model.request.LoginReq;
 import com.mall.service.UserService;
 import com.mysql.cj.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
+@Validated // 必须加上这个注解才可以验证
 public class UserController {
     @Autowired
     UserService userService;

@@ -3,6 +3,7 @@ package com.mall.exception;
 import com.mall.common.ApiRestRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -11,9 +12,13 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 处理统一异常的handler
@@ -52,6 +57,19 @@ public class GlobalExceptionHandler {
         return ApiRestRes.error(e.getCode(), e.getMessage());
     }
 
+    //处理请求参数格式错误 @RequestParam上validate失败后抛出的异常是javax.validation.ConstraintViolationException
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseBody
+    public ApiRestRes ConstraintViolationExceptionHandler(ConstraintViolationException e) {
+        String message = e.getConstraintViolations().stream().map(ConstraintViolation::getMessage).collect(Collectors.joining());
+        return ApiRestRes.error(MallExceptionEnum.REQUEST_PARAM_ERROR.getCode(), message);
+    }
+
+    /**
+     * 拦截的是 @RequestBody 产生的异常
+     *
+     * @param e MethodArgumentNotValidException.class
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
     public ApiRestRes handleMethodArgNotValidException(MethodArgumentNotValidException e) {

@@ -125,7 +125,7 @@ public class GraphqlExceptionHandler implements DataFetcherExceptionHandler {
 
 # validation
 
-1. 添加依赖
+## 依赖
 
 ~~~xml
 <dependency>
@@ -141,64 +141,41 @@ public class GraphqlExceptionHandler implements DataFetcherExceptionHandler {
 
 > 注：从 `springboot-2.3`开始，校验包被独立成了一个 `starter`组件，所以需要引入validation和web，而 `springboot-2.3`之前的版本只需要引入 web 依赖就可以了。
 
-2. 使用
+## @RequestBody @Valid
+
+> @RequestBody验证，需要在DTO层使用注解，控制器层的方法加上`@Valid`开启异常校验。最后在GlobalExceptionHandler进行异常拦截
+
+1. DTO层，使用注解
 
 ~~~java
-public class LoginReq {
-    @NotBlank(message = "姓名不能为空")
+@Data
+public class LoginInput {
+    @NotEmpty(message = "用户名不能为空")
     private String userName;
 
-    @NotBlank(message = "密码不能为空")
+    @NotEmpty(message = "密码不能为空")
+    @Min(4)
+    @Max(8)
     private String password;
 }
 ~~~
 
+2. 控制器层
+
 ~~~java
 @PostMapping("/login")
-public ApiRestRes login(@RequestBody @Valid LoginReq loginReq){}
+public ApiRestRes login(@RequestBody @Valid LoginReq loginReq) {}
 ~~~
 
-## globalExceptionHandler
-
-> 全局异常处理
+3. 全局异常拦截，**这里只拦截@RequestBody @Valid产生的异常**
 
 ~~~java
-/**
- * 处理统一异常的handler
- */
-/*这个注解是拦截异常的*/
-@ControllerAdvice
+@ControllerAdvice // 拦截异常的注解
 public class GlobalExceptionHandler {
     /**
-     * 重名用户异常在service层抛出的是异常，不是APIResponse
-     * 系统级别的异常要打印出日志
+     * 拦截的是 @RequestBody 产生的异常
+     * @param e MethodArgumentNotValidException.class
      */
-
-    /**
-     * 这个注解是  告诉 处理系统异常
-     *
-     * @param e 当前产生的异常
-     */
-    @ExceptionHandler(Exception.class)
-    @ResponseBody
-    public Object handleException(Exception e) {
-        log.error("Default Exception", e);
-        // 处理系统的异常
-        return ApiRestRes.error(MallExceptionEnum.SYSTEM_ERROR);
-    }
-
-    /**
-     * 拦截自定义异常并处理
-     *
-     * @param e MallException.class
-     */
-    @ExceptionHandler(MallException.class)
-    @ResponseBody
-    public Object handleImoocMallException(MallException e) {
-        log.error("MallException" + e);
-        return ApiRestRes.error(e.getCode(), e.getMessage());
-    }
-	// 处理参数校验异常
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
     public ApiRestRes handleMethodArgNotValidException(MethodArgumentNotValidException e) {
@@ -219,6 +196,34 @@ public class GlobalExceptionHandler {
         }
         return ApiRestRes.error(MallExceptionEnum.REQUEST_PARAM_ERROR.getCode(), list.toString());
     }
+}
+~~~
+
+## @RequestParam @NotBlank
+
+> **这个requestParam不能验证数字类型**
+
+> 它产生的异常是`ConstraintViolationException`
+
+1. 在控制器上加上**@Validated**
+
+~~~java
+@RestController
+@Validated // 必须加上这个注解才可以验证
+public class UserController {
+    public ApiRestRes register(@RequestParam("userName") @NotBlank(message = "用户名不能为空") String userName){}
+}
+~~~
+
+2. 全局异常拦截
+
+~~~java
+//处理请求参数格式错误 @RequestParam上validate失败后抛出的异常是javax.validation.ConstraintViolationException
+@ExceptionHandler(ConstraintViolationException.class)
+@ResponseBody
+public ApiRestRes ConstraintViolationExceptionHandler(ConstraintViolationException e) {
+   String message = e.getConstraintViolations().stream().map(ConstraintViolation::getMessage).collect(Collectors.joining());
+        return ApiRestRes.error(MallExceptionEnum.REQUEST_PARAM_ERROR.getCode(),message);
 }
 ~~~
 
