@@ -9,19 +9,14 @@ import com.mall.model.pojo.Product;
 import com.mall.model.request.AddProductReq;
 import com.mall.model.request.UpdateProductReq;
 import com.mall.service.ProductService;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -94,7 +89,8 @@ public class ProductAdmin {
      * @return
      */
     @PostMapping("/admin/product/list")
-    public ApiRestRes list(@RequestParam Integer pageNum, @RequestParam Integer pageSize) {
+    @CrossOrigin
+    public ApiRestRes list(@RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize) {
         PageInfo pageInfo = productService.listForAdmin(pageNum, pageSize);
         return ApiRestRes.success(pageInfo);
     }

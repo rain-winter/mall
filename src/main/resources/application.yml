@@ -17,13 +17,14 @@ file:
   upload:
     dir: D:/File/Github/mall-dev/src/main/resources/static/upload/
     ip: 0.0.0.0
-#
+
+
 # Sa-Token配置
 sa-token:
   # token 名称 (同时也是cookie名称)
-  token-name: token
+  token-name: satoken
   # token 有效期，单位s 默认30天, -1代表永不过期
-  timeout: 259200
+  timeout: 2592000
   # token 临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
   activity-timeout: -1
   # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
@@ -31,26 +32,7 @@ sa-token:
   # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
   is-share: false
   # token风格
-  token-style: token-style=tik
+  token-style: uuid
   # 是否输出操作日志
-  is-log: true
-  # jwt 密钥
-  jwt-secret-key: asdasdasifhueuiwyurfewbfjsdafjk
-  cookie:
-    domain: stp.com
-  sso:
-    # Ticket有效期 (单位: 秒)，默认五分钟
-    ticket-timeout: 300
-    # 所有允许的授权回调地址
-    allow-url: "*"
-    # 是否打开单点注销功能
-    is-slo: true
-
-    # ------- SSO-模式三相关配置 （下面的配置在SSO模式三并且 is-slo=true 时打开） -------
-    # 是否打开模式三
-    isHttp: true
-    # 接口调用秘钥（用于SSO模式三的单点注销功能）
-    secretkey: kQwIOrYvnXmSDkwEiFngrKidMcdrgKor
-
-
+  is-log: false
 

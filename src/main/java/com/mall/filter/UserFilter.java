@@ -3,7 +3,8 @@ package com.mall.filter;
  * 描述： 用户过滤器
  */
 
-import com.mall.common.Constant;
+import cn.dev33.satoken.stp.StpUtil;
+import com.mall.model.mapper.UserMapper;
 import com.mall.model.pojo.User;
 import com.mall.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class UserFilter implements Filter {
     @Autowired
     UserService userService;
 
+    @Autowired
+    UserMapper userMapper;
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         Filter.super.init(filterConfig);
@@ -39,7 +43,10 @@ public class UserFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpSession session = request.getSession();
-        currentUser = (User) session.getAttribute(Constant.IMOOC_MALL_USER);
+
+        Integer id = StpUtil.getLoginIdAsInt();
+        currentUser = userMapper.selectById(id);
+//        currentUser = (User) session.getAttribute(Constant.IMOOC_MALL_USER);
         if (currentUser == null) {
             // 这个方法规定是 void ，所以不可以返回数据
             //return ApiRestResponse.error(ImoocMallExceptionEnum.NEED_LOGIN);

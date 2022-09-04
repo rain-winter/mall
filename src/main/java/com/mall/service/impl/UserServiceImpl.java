@@ -1,7 +1,6 @@
 package com.mall.service.impl;
 
 import cn.dev33.satoken.secure.SaSecureUtil;
-import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mall.common.Constant;
 import com.mall.exception.MallException;
@@ -20,7 +19,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public User login(String userName, String password) {
-        System.out.println(userName);
         User user = userMapper.selectLogin(userName, SaSecureUtil.md5BySalt(password,Constant.SALT));
         if (user == null) {
             throw new MallException(MallExceptionEnum.WRONG_PASSWORD);

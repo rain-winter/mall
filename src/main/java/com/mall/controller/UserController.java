@@ -1,5 +1,6 @@
 package com.mall.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.mall.common.ApiRestRes;
 import com.mall.common.Constant;
 import com.mall.exception.MallException;
@@ -30,6 +31,7 @@ public class UserController {
         session.setAttribute(Constant.IMOOC_MALL_USER, user);
         return ApiRestRes.success(user);
     }
+
 
     @PostMapping("/register")
     @ResponseBody
@@ -91,6 +93,7 @@ public class UserController {
     @PostMapping("/adminlogin")
     @ResponseBody
     public ApiRestRes adminLogin(@RequestParam("userName") String userName, @RequestParam("password") String password, HttpSession session) throws MallException {
+        System.out.println("session--------------------"+session);
         if (StringUtils.isNullOrEmpty(userName)) {
             return ApiRestRes.error(MallExceptionEnum.NEED_USER_NAME);
         }
@@ -102,10 +105,18 @@ public class UserController {
         if (userService.checkAdminRole(user)) {
             // 是管理员 登录
             user.setPassword(null);
-            session.setAttribute(Constant.IMOOC_MALL_USER, user);
+            // TODO session貌似不能生效
+//            session.setAttribute(Constant.IMOOC_MALL_USER, user);
+            // TODO 设置token
+            StpUtil.login(user.getId());
         } else {
             return ApiRestRes.error(MallExceptionEnum.NEED_ADMIN);
         }
         return ApiRestRes.success(user);
     }
+    @GetMapping("/isLogin")
+    public String isLogin() {
+        return "当前会话是否登录：" + StpUtil.isLogin();
+    }
+
 }

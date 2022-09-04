@@ -4,6 +4,7 @@ type Query {
 
 type Mutation {
     login(loginInput:LoginInput):User
+    register(loginInput:LoginInput):String
 }
 
 input LoginInput {
