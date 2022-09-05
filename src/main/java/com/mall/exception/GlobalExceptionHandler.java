@@ -3,9 +3,7 @@ package com.mall.exception;
 import com.mall.common.ApiRestRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,9 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +40,29 @@ public class GlobalExceptionHandler {
         // 处理系统的异常
         return ApiRestRes.error(MallExceptionEnum.SYSTEM_ERROR);
     }
+
+//    @ExceptionHandler(NotLoginException.class)
+//    @ResponseBody
+//    public Object handleNotLoginException(NotLoginException nle) {
+//        log.error("NotLoginException", nle);
+//        // 处理系统的异常
+//        String message = "";
+//        if (nle.getType().equals(NotLoginException.NOT_TOKEN)) {
+//            message = "未提供Token";
+//        } else if (nle.getType().equals(NotLoginException.INVALID_TOKEN)) {
+//            message = "未提供有效的Token";
+//        } else if (nle.getType().equals(NotLoginException.TOKEN_TIMEOUT)) {
+//            message = "登录信息已过期，请重新登录";
+//        } else if (nle.getType().equals(NotLoginException.BE_REPLACED)) {
+//            message = "您的账户已在另一台设备上登录，如非本人操作，请立即修改密码";
+//        } else if (nle.getType().equals(NotLoginException.KICK_OUT)) {
+//            message = "已被系统强制下线";
+//        } else {
+//            message = "当前会话未登录";
+//        }
+//        // 返回给前端
+//        return ApiRestRes.error(MallExceptionEnum.NEED_ADMIN);
+//    }
 
     /**
      * 拦截自定义异常并处理

@@ -1,8 +1,12 @@
 package com.mall.config;
 
+import cn.dev33.satoken.interceptor.SaRouteInterceptor;
 import com.mall.common.Constant;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class MallWebMvcConfig implements WebMvcConfigurer {
@@ -34,8 +38,17 @@ public class MallWebMvcConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")  //允许头部设置
                 .allowedMethods("*")  //允许跨域请求的方法
                 .allowCredentials(true)
-                .maxAge(168000)  //预检间隔时间
+                .maxAge(168000)  // 预检间隔时间
                 .allowedOriginPatterns("*");
 
+    }
+
+    // 注册拦截器
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        // 注册 Sa-Token 的路由拦截器
+        registry.addInterceptor(new SaRouteInterceptor())
+                .addPathPatterns("/**")
+                .excludePathPatterns("/adminlogin","/login");
     }
 }

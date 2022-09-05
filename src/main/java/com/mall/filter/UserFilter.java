@@ -44,9 +44,9 @@ public class UserFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpSession session = request.getSession();
 
-        Integer id = StpUtil.getLoginIdAsInt();
-        currentUser = userMapper.selectById(id);
-//        currentUser = (User) session.getAttribute(Constant.IMOOC_MALL_USER);
+        if (StpUtil.isLogin()) {
+            currentUser = userMapper.selectById(StpUtil.getLoginIdAsInt());
+        }
         if (currentUser == null) {
             // 这个方法规定是 void ，所以不可以返回数据
             //return ApiRestResponse.error(ImoocMallExceptionEnum.NEED_LOGIN);
@@ -61,7 +61,7 @@ public class UserFilter implements Filter {
             out.close();
             return; // 方法到这就结束了。
         }
-//        调用这个方法
+        //  调用这个方法
         filterChain.doFilter(servletRequest, servletResponse);
     }
 }
