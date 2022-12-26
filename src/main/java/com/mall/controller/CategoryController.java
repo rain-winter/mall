@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 
@@ -121,5 +119,12 @@ public class CategoryController {
     public ApiRestRes listCategoryForCustomer() {
         List<CategoryVO> categoryVOS = categoryService.listCategoryForCustomer(0);
         return ApiRestRes.success(categoryVOS);
+    }
+
+    @ResponseBody
+    @PostMapping("/allCategory")
+    public ApiRestRes listCategoryAll(){
+      List<Category> list=  categoryService.list();
+      return ApiRestRes.success(list);
     }
 }

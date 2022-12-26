@@ -16,14 +16,14 @@ import com.mall.model.pojo.Order;
 import com.mall.model.pojo.OrderItem;
 import com.mall.model.pojo.Product;
 import com.mall.model.request.CreateOrderReq;
+import com.mall.model.vo.CartVO;
+import com.mall.model.vo.OrderItemVO;
+import com.mall.model.vo.OrderVO;
 import com.mall.service.CartService;
 import com.mall.service.OrderService;
 import com.mall.service.UserService;
 import com.mall.utils.OrderCodeFactory;
 import com.mall.utils.QrcodeGenerator;
-import com.mall.model.vo.CartVO;
-import com.mall.model.vo.OrderItemVO;
-import com.mall.model.vo.OrderVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,8 +35,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -213,10 +211,16 @@ public class OrderServiceImpl implements OrderService {
         }
         // 订单存在，判断所属
         Integer userId = UserFilter.currentUser.getId();
-        if (!order.getUserId().equals(userId)) {
+        OrderVO orderVO = null;
+        if (userService.checkAdminRole(UserFilter.currentUser)) {
+             orderVO = getOrderVO(order);
+        }else if(!order.getUserId().equals(userId)){
             throw new MallException(MallExceptionEnum.NOT_YOUR_ORDER);
         }
-        OrderVO orderVO = getOrderVO(order);
+//        if (!order.getUserId().equals(userId)) {
+//            throw new MallException(MallExceptionEnum.NOT_YOUR_ORDER);
+//        }
+//        OrderVO orderVO = getOrderVO(order);
         return orderVO;
     }
 

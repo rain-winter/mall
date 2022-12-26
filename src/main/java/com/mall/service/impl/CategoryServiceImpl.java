@@ -1,14 +1,16 @@
 package com.mall.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mall.exception.MallException;
 import com.mall.exception.MallExceptionEnum;
 import com.mall.model.mapper.CategoryMapper;
+import com.mall.model.mapper.ImageMapper;
 import com.mall.model.pojo.Category;
 import com.mall.model.request.AddCategoryReq;
-import com.mall.service.CategoryService;
 import com.mall.model.vo.CategoryVO;
+import com.mall.service.CategoryService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,9 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class CategoryServiceImpl implements CategoryService {
+public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> implements CategoryService {
     @Autowired
     CategoryMapper categoryMapper;
+
+    @Autowired
+    ImageMapper imageMapper;
 
     @Override
     public void add(AddCategoryReq addCategoryReq) {
@@ -106,13 +111,13 @@ public class CategoryServiceImpl implements CategoryService {
             , Integer parentId) {
         // 递归获取所有子类别，并组合成一个“目录树”
         List<Category> categoryList = categoryMapper.selectCategoriesByParentId(parentId);
+
         if (!CollectionUtils.isEmpty(categoryList)) {
             // 我们直接判断categoryList==null。不太好
             // 所有我们用这个方法。它除了判断是否为null，还会判断集合里有没有元素。如果返回true代表没元素为空。
             for (int i = 0; i < categoryList.size(); i++) {
                 Category category = categoryList.get(i);
                 CategoryVO categoryVO = new CategoryVO();
-
                 BeanUtils.copyProperties(category, categoryVO);
                 categoryVOArrayList.add(categoryVO);
                 // 递归调用recursivelyFindCategories()  为其子目录赋值

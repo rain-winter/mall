@@ -15,6 +15,8 @@ public class CategoryVO {
 
     private Integer parentId;
 
+    private String imgUrl;
+
     private Integer orderNum;
 
     private Date createTime;

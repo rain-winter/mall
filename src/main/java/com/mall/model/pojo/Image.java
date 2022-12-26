@@ -5,24 +5,11 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
-import java.util.Date;
 @Data
-@TableName("mall_category") // 设置表明
-public class Category {
+@TableName("mall_image") // 设置表明
+public class Image {
     @TableId(type = IdType.AUTO) // 设置主键递增
     private Integer id;
 
-    private String name;
-
-    private Integer type;
-
-    private Integer parentId;
-
-    private String imgUrl;
-
-    private Integer orderNum;
-
-    private Date createTime;
-
-    private Date updateTime;
+    private String img_url;
 }

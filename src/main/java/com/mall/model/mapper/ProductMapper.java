@@ -18,4 +18,5 @@ public interface ProductMapper extends BaseMapper<Product> {
 
     // 前台列表
     List<Product> selectList(@Param("query") ProductListQuery query);
+
 }

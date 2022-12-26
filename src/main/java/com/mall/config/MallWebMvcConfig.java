@@ -43,12 +43,13 @@ public class MallWebMvcConfig implements WebMvcConfigurer {
 
     }
 
-    // 注册拦截器
+    // 注册token拦截器
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // 注册 Sa-Token 的路由拦截器
         registry.addInterceptor(new SaRouteInterceptor())
-                .addPathPatterns("/**")
+                .addPathPatterns("/cart/*")
+                .addPathPatterns("/order/*")
                 .excludePathPatterns("/adminlogin","/login");
     }
 }

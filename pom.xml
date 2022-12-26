@@ -56,11 +56,11 @@
         </dependency>
 
         <!--   添加log4j2     -->
-                <dependency>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-log4j2</artifactId>
-                    <!-- 不用指定版本，他自己下-->
-                </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+            <!-- 不用指定版本，他自己下-->
+        </dependency>
         <!-- 分页的依赖 -->
         <dependency>
             <groupId>com.github.pagehelper</groupId>
