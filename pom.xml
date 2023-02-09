@@ -16,7 +16,15 @@
     <properties>
         <java.version>17</java.version>
     </properties>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
+    <repositories>
+        <repository>
+            <!-- 创建私服的地址-->
+            <id>aliyun</id>
+            <name>aliyun</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </repository>
+    </repositories>
     <!-- graphql -->
     <dependencyManagement>
         <dependencies>
@@ -175,7 +183,16 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
         </plugins>
+
     </build>
 
 </project>

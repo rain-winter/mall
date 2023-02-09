@@ -6,13 +6,13 @@
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="type" jdbcType="INTEGER" property="type"/>
         <result column="parent_id" jdbcType="INTEGER" property="parentId"/>
-        <result column="imgUrl" jdbcType="VARCHAR" property="imgUrl"/>
+        <result column="img" jdbcType="VARCHAR" property="img"/>
         <result column="order_num" jdbcType="INTEGER" property="orderNum"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, `name`, `type`, `imgUrl`, parent_id, order_num, create_time, update_time
+        id, `name`, `type`, `img`, parent_id, order_num, create_time, update_time
     </sql>
     <!--  通过名字查找分类-->
     <select id="selectByName" parameterType="java.lang.String" resultMap="BaseResultMap">

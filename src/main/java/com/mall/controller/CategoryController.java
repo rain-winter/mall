@@ -4,6 +4,8 @@ import com.github.pagehelper.PageInfo;
 import com.mall.common.ApiRestRes;
 import com.mall.common.Constant;
 import com.mall.exception.MallExceptionEnum;
+import com.mall.filter.AdminFilter;
+import com.mall.filter.UserFilter;
 import com.mall.model.pojo.Category;
 import com.mall.model.pojo.User;
 import com.mall.model.request.AddCategoryReq;
@@ -70,7 +72,8 @@ public class CategoryController {
     @PostMapping("admin/category/update")
     @ResponseBody
     public ApiRestRes updateCategory(@Valid @RequestBody UpdateCategoryReq updateCategoryReq, HttpSession session) {
-        User currentUser = (User) session.getAttribute(Constant.IMOOC_MALL_USER);
+//        User currentUser = (User) session.getAttribute(Constant.IMOOC_MALL_USER);
+        User currentUser = AdminFilter.currentUser;
         if (currentUser == null) {
             return ApiRestRes.error(MallExceptionEnum.NEED_LOGIN);
         }

@@ -6,6 +6,7 @@ spring:
     name: mall_datasource
     username: root
     password: 123456
+#    url: jdbc:mysql://8.130.9.104:3306/mall_v2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false&serverTimezone=Asia/Shanghai
     url: jdbc:mysql://127.0.0.1:3306/mall_v2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
 server:
@@ -15,8 +16,9 @@ server:
     context-path: /api
 file:
   upload:
-    dir: D:/File/Github/mall-dev/src/main/resources/static/upload/
+    dir: D:/Project/mall-dev/src/main/resources/static/upload/
     ip: 0.0.0.0
+#    dir: /home/mall/mall-dev/images/
 
 
 # Sa-Token配置

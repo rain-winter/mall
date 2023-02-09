@@ -18,7 +18,7 @@ public class Category {
 
     private Integer parentId;
 
-    private String imgUrl;
+    private String img;
 
     private Integer orderNum;
 

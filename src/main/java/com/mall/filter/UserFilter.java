@@ -46,6 +46,7 @@ public class UserFilter implements Filter {
 
         if (StpUtil.isLogin()) {
             currentUser = userMapper.selectById(StpUtil.getLoginIdAsInt());
+            System.out.println(currentUser);
         }
         if (currentUser == null) {
             // 这个方法规定是 void ，所以不可以返回数据

@@ -19,6 +19,8 @@ public class UpdateCategoryReq {
     @NotNull
     private String name;
 
+    private String img;
+
     @Max(3) // 类型最大的数字是3。我们只有三级目录
     private Integer type;
 

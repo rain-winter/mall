@@ -16,6 +16,8 @@ import java.io.PrintWriter;
 
 public class AdminFilter implements Filter {
 
+    public static User currentUser;
+
     @Autowired
     UserService userService;
 
@@ -47,7 +49,6 @@ public class AdminFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpSession session = request.getSession();
 
-        User currentUser = null;
         if (StpUtil.isLogin()) {
             currentUser = userMapper.selectById(StpUtil.getLoginIdAsInt());
             // 当前用户用户是管理员

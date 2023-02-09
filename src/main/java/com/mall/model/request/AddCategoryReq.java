@@ -24,7 +24,7 @@ public class AddCategoryReq {
 
     @NotNull(message = "orderNum不能为空")
     private Integer orderNum;
-    
+
     @NotNull(message = "image不能为空")
     private String image;
 
