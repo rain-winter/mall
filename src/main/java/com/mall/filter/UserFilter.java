@@ -46,6 +46,9 @@ public class UserFilter implements Filter {
 
         if (StpUtil.isLogin()) {
             currentUser = userMapper.selectById(StpUtil.getLoginIdAsInt());
+            System.
+                    out.println("----------------------------");
+            System.out.println(StpUtil.getLoginIdAsInt());
             System.out.println(currentUser);
         }
         if (currentUser == null) {

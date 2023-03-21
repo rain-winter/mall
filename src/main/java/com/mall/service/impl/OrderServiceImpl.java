@@ -1,6 +1,7 @@
 package com.mall.service.impl;
 
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.zxing.WriterException;
@@ -16,6 +17,7 @@ import com.mall.model.pojo.Order;
 import com.mall.model.pojo.OrderItem;
 import com.mall.model.pojo.Product;
 import com.mall.model.request.CreateOrderReq;
+import com.mall.model.request.CreateOrderReqFormReq;
 import com.mall.model.vo.CartVO;
 import com.mall.model.vo.OrderItemVO;
 import com.mall.model.vo.OrderVO;
@@ -43,7 +45,7 @@ import java.util.List;
  * 描述: 订单 Service实现类
  */
 @Service
-public class OrderServiceImpl implements OrderService {
+public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
 
     @Autowired
     CartService cartService;
@@ -63,8 +65,41 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     UserService userService;
 
+
     @Value("${file.upload.ip}")
     String ip;
+
+
+    @Override
+    public String createOrderFromReq(CreateOrderReqFormReq req) {
+        Integer userId = UserFilter.currentUser.getId();
+        Product product = productMapper.selectById(req.getId());
+        Order order = new Order();
+        // 生成订单
+        String orderNo = OrderCodeFactory.getOrderCode(Long.valueOf(userId));
+        order.setOrderNo(orderNo);
+        order.setUserId(userId);
+        Integer totaoPrice = req.getQuantity()*product.getPrice();
+        order.setTotalPrice(totaoPrice);
+        order.setReceiverName(req.getReceiverName());
+        order.setReceiverMobile(req.getReceiverMobile());
+        order.setReceiverAddress(req.getReceiverAddress());
+        order.setOrderStatus(Constant.OrderStatusEnum.NOT_PAID.getCode());
+        order.setPaymentType(0);
+        order.setPaymentType(1);
+        // 插入到order表
+        orderMapper.insert(order);
+        // 插入商品到order_item表
+        OrderItem orderItem = new OrderItem();
+        orderItem.setProductId(product.getId());
+        // 记录商品快照信息
+        orderItem.setProductName(product.getName());
+        orderItem.setProductImg(product.getImage());
+        orderItem.setUnitPrice(product.getPrice());
+        orderItem.setQuantity(req.getQuantity());
+        orderItem.setTotalPrice(totaoPrice);
+        return orderNo;
+    }
 
     /**
      * 创建订单
@@ -82,7 +117,6 @@ public class OrderServiceImpl implements OrderService {
         List<CartVO> cartVOList = cartService.list(userId); // 选中的 商品列表
         ArrayList<CartVO> cartVOListTmp = new ArrayList<>();
         for (CartVO cartVO : cartVOList) {
-            System.out.println(cartVO);
             // 筛选出选中的商品
             if (cartVO.getSelected().equals(Constant.Cart.CHECKED)) {
                 cartVOListTmp.add(cartVO);
@@ -213,8 +247,8 @@ public class OrderServiceImpl implements OrderService {
         Integer userId = UserFilter.currentUser.getId();
         OrderVO orderVO = null;
         if (userService.checkAdminRole(UserFilter.currentUser)) {
-             orderVO = getOrderVO(order);
-        }else if(!order.getUserId().equals(userId)){
+            orderVO = getOrderVO(order);
+        } else if (!order.getUserId().equals(userId)) {
             throw new MallException(MallExceptionEnum.NOT_YOUR_ORDER);
         }
 //        if (!order.getUserId().equals(userId)) {

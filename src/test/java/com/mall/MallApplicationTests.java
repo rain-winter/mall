@@ -23,7 +23,6 @@ class MallApplicationTests {
     @Test
     void testMapper() {
         User user = new User();
-        user.setEmail("310040@qq.com");
         user.setPassword("1234566");
         user.setRole(1);
         user.setPersonalizedSignature("123456");

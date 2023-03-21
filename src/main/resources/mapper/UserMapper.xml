@@ -5,14 +5,14 @@
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="username" jdbcType="VARCHAR" property="username"/>
         <result column="password" jdbcType="VARCHAR" property="password"/>
-        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="openid" jdbcType="VARCHAR" property="openid"/>
         <result column="personalized_signature" jdbcType="VARCHAR" property="personalizedSignature"/>
         <result column="role" jdbcType="INTEGER" property="role"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, username, `password`,email, personalized_signature, `role`, create_time, update_time
+        id, username, `password`,openid, personalized_signature, `role`, create_time, update_time
     </sql>
     <select id="selectLogin" parameterType="map" resultMap="BaseResultMap">
         select
@@ -27,6 +27,14 @@
         from mall_user
         where
         username = #{userName,jdbcType=VARCHAR}
+
+    </select>
+    <select id="selectByOpenId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from mall_user
+        where
+        openid = #{openid,jdbcType=VARCHAR}
 
     </select>
 </mapper>

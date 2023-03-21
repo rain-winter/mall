@@ -8,6 +8,9 @@ public interface UserMapper extends BaseMapper<User> {
     User selectLogin(@Param("userName") String userName, @Param("password") String password);
 
     User selectByName(@Param("userName") String userName);
+
+    User selectByOpenId(@Param("openid") String openid);
+
 }
 
 

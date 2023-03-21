@@ -1,14 +1,21 @@
 package com.mall.service;
 
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.pagehelper.PageInfo;
+import com.mall.model.pojo.Order;
 import com.mall.model.request.CreateOrderReq;
+import com.mall.model.request.CreateOrderReqFormReq;
 import com.mall.model.vo.OrderVO;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 描述: 订单 Service
  */
-public interface OrderService {
+public interface OrderService extends IService<Order> {
+
+
+    String createOrderFromReq(CreateOrderReqFormReq req);
 
     String create(CreateOrderReq createOrderReq);
 

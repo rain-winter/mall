@@ -18,7 +18,7 @@ file:
   upload:
     dir: D:/Project/mall-dev/src/main/resources/static/upload/
     ip: 0.0.0.0
-#    dir: /home/mall/mall-dev/images/
+
 
 
 # Sa-Token配置

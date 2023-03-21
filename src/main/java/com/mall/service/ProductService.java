@@ -1,5 +1,6 @@
 package com.mall.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.pagehelper.PageInfo;
 import com.mall.model.pojo.Category;
 import com.mall.model.pojo.Product;
@@ -11,7 +12,7 @@ import com.mall.model.request.AddProductReq;
 
 import java.util.List;
 
-public interface ProductService {
+public interface ProductService extends IService<Product> {
     public void add(AddProductReq addProductReq);
 
     void update(Product updateProduct);

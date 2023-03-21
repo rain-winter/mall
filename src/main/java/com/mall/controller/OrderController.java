@@ -3,6 +3,7 @@ package com.mall.controller;
 import com.github.pagehelper.PageInfo;
 import com.mall.common.ApiRestRes;
 import com.mall.model.request.CreateOrderReq;
+import com.mall.model.request.CreateOrderReqFormReq;
 import com.mall.service.OrderService;
 import com.mall.model.vo.OrderVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,17 @@ public class OrderController {
     OrderService orderService;
 
     /**
+     * 不加入购物车，直接创建订单
+     * @param createOrderReqFormReq
+     * @return
+     */
+    @PostMapping("order/createFromReq")
+    public ApiRestRes createOrderFromReq(@RequestBody @Valid CreateOrderReqFormReq createOrderReqFormReq){
+        String orderNo = orderService.createOrderFromReq(createOrderReqFormReq);
+        return ApiRestRes.success(orderNo);
+    }
+
+    /**
      * 创建订单
      *
      * @param createOrderReq
@@ -32,6 +44,11 @@ public class OrderController {
     public ApiRestRes create(@RequestBody @Valid CreateOrderReq createOrderReq) {
         String orderNo = orderService.create(createOrderReq);
         return ApiRestRes.success(orderNo);
+    }
+
+    @PostMapping("order/createDirectly")
+    public  ApiRestRes CreateOrderDirectly(){
+        return null;
     }
 
     // 查看订单详情

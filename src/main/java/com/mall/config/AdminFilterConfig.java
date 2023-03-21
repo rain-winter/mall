@@ -23,6 +23,8 @@ public class AdminFilterConfig {
         filterRegistrationBean.addUrlPatterns("/admin/category/*");
         filterRegistrationBean.addUrlPatterns("/admin/product/*");
         filterRegistrationBean.addUrlPatterns("/admin/order/*");
+        filterRegistrationBean.addUrlPatterns("/" +
+                "userlist/");
         // 给当前的Bean设置名字
         filterRegistrationBean.setName("adminFilterConfig");
         // 返回

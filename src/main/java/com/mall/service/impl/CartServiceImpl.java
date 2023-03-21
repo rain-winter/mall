@@ -44,7 +44,7 @@ public class CartServiceImpl implements CartService {
             cartMapper.insert(cart);
         } else {
             // 这个商品已经在购物车里，则数量相加
-            count = cart.getQuantity() + count;
+//            count = cart.getQuantity() + count;
             Cart cartNew = new Cart();
             cartNew.setQuantity(count);
             cartNew.setId(cart.getId());
@@ -79,6 +79,8 @@ public class CartServiceImpl implements CartService {
         } else {
             // 这个商品已经在购物车里，则数量相加
 //            count = cart.getQuantity() + count;
+            System.out.println("99999999999999999999999999999");
+            System.out.println(count);
             Cart cartNew = new Cart();
             cartNew.setQuantity(count);
             cartNew.setId(cart.getId());
